@@ -80,8 +80,8 @@ class YoloAnnotatorNode(Node):
         return {
             "chair": (255, 0, 0),
             "dining table": (0, 255, 0),
-            "laptop":(0,0,255),
-            "person":(150,0,150),
+            "laptop":(0, 0, 255),
+            "person":(150 , 0, 150),
             "cell phone":(0,150,150),
             "bench":(150,150,0),
             "couch":(100,20,30),
@@ -161,10 +161,10 @@ class YoloAnnotatorNode(Node):
             det = Detection(class_id=cls,
                             class_name=self.model.names[cls],
                             confidence=conf,
-                            x1=xyxy[0],
-                            x2=xyxy[2],
-                            y1=xyxy[1],
-                            y2=xyxy[3])
+                            x1=float(xyxy[0]),
+                            x2=float(xyxy[2]),
+                            y1=float(xyxy[1]),
+                            y2=float(xyxy[3]))
             detections.append(det)
         return detections
 
