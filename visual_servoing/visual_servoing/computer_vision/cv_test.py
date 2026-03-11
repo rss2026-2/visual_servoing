@@ -90,9 +90,9 @@ def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False
             bbox_true = ast.literal_eval(row[1])
             if not swap:
                 img = cv2.imread(img_path)
-                template = cv2.imread(template_file_path, 0)
+                template = cv2.imread(template_file_path)
             else:
-                template = cv2.imread(img_path, 0)
+                template = cv2.imread(img_path)
                 img = cv2.imread(template_file_path)
             # Detection bbox
             bbox_est = detection_func(img, template)
@@ -176,5 +176,8 @@ if __name__ == '__main__':
         if scores:
             for (img, val) in scores.items():
                 print((img, val))
+            
+            print("Avg score: ", np.mean(list(scores.values())))
+            print("Min score: ", np.min(list(scores.values())))
     else:
         print("too many arguments")
