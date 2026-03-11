@@ -27,14 +27,14 @@ def image_print(img):
 def erosion_filter(box_size = 3, iterations = 1):
     erosion_kernel = np.ones((box_size, box_size), np.uint8)
     def erosion_func(input_image):
-        return cv2.erode(input_image, erosion_kernel, iterations)
+        return cv2.erode(input_image, erosion_kernel, iterations = iterations)
     
     return erosion_func
 
-def dilation_filter(box_size = 3, iterations = 2):
+def dilation_filter(box_size = 3, iterations = 1):
     dilation_kernel = np.ones((box_size, box_size), np.uint8)
     def dilation_func(input_image):
-        return cv2.dilate(input_image, dilation_kernel, iterations)
+        return cv2.dilate(input_image, dilation_kernel, iterations = iterations)
     
     return dilation_func
 
@@ -69,23 +69,12 @@ def cd_color_segmentation(img, template):
 
     filter_cascade = create_filter_cascade([
         erosion_filter(5, 1),
+        dilation_filter(5, 2)
     ])
 
-    # filter_cascade_2 = create_filter_cascade([
-    #     dilation_filter(5,2),
-    # ])
-
-    # erosion_kernel = np.ones((5,5), np.uint8)
-    # eroded_mask = cv2.erode(color_mask, erosion_kernel, iterations = 1)
-
-    eroded_mask = filter_cascade(color_mask)
-
-    # dilated_mask = filter_cascade_2(eroded_mask)
-
-    dilation_kernel = np.ones((5,5), np.uint8)
-    dilated_mask = cv2.dilate(eroded_mask, dilation_kernel, iterations = 2)
+    filtered_mask = filter_cascade(color_mask)
  
-    contours, _ = cv2.findContours(dilated_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     box_max = 0
     bounds_max = None
