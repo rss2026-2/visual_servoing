@@ -50,6 +50,8 @@ class ConeDetector(Node):
         #################################
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        bbox = cd_color_segmentation(image, cv2.imread("./visual_servoing/computer_vision/test_images_cone/cone_template.png"))
+        cv2.rectangle(image, bbox[0], bbox[1], (255,0,0), 2)
 
         debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
         self.debug_pub.publish(debug_msg)

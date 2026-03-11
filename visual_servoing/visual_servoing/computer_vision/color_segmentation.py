@@ -24,6 +24,32 @@ def image_print(img):
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 
+def erosion_filter(box_size = 3, iterations = 1):
+    erosion_kernel = np.ones((box_size, box_size), np.uint8)
+    def erosion_func(input_image):
+        return cv2.erode(input_image, erosion_kernel, iterations)
+    
+    return erosion_func
+
+def dilation_filter(box_size = 3, iterations = 2):
+    dilation_kernel = np.ones((box_size, box_size), np.uint8)
+    def dilation_func(input_image):
+        return cv2.dilate(input_image, dilation_kernel, iterations)
+    
+    return dilation_func
+
+def create_filter_cascade(filter_list):
+    def filter_cascade(image):
+        for filt in filter_list:
+            image = filt(image)
+
+        return image
+    
+
+    return filter_cascade
+
+
+
 def cd_color_segmentation(img, template):
     """
     Implement the cone detection using color segmentation algorithm
@@ -41,13 +67,24 @@ def cd_color_segmentation(img, template):
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     color_mask = cv2.inRange(hsv_input_img, hsv_range["lower"], hsv_range["upper"])
 
-    erosion_kernel = np.ones((5,5), np.uint8)
-    eroded_mask = cv2.erode(color_mask, erosion_kernel, iterations = 1)
+    filter_cascade = create_filter_cascade([
+        erosion_filter(5, 1),
+    ])
+
+    # filter_cascade_2 = create_filter_cascade([
+    #     dilation_filter(5,2),
+    # ])
+
+    # erosion_kernel = np.ones((5,5), np.uint8)
+    # eroded_mask = cv2.erode(color_mask, erosion_kernel, iterations = 1)
+
+    eroded_mask = filter_cascade(color_mask)
+
+    # dilated_mask = filter_cascade_2(eroded_mask)
 
     dilation_kernel = np.ones((5,5), np.uint8)
     dilated_mask = cv2.dilate(eroded_mask, dilation_kernel, iterations = 2)
-    
-    
+ 
     contours, _ = cv2.findContours(dilated_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     box_max = 0
@@ -62,7 +99,7 @@ def cd_color_segmentation(img, template):
             box_max = w * h
 
     if testing:
-        cv2.rectangle(img, bounds_max[0], bounds_max[1], (255, 0, 0), 2)
+        cv2.rectangle(img, bounds_max[0], bounds_max[1], (0, 0, 255), 2)
         image_print(img)
 
     bounding_box = bounds_max
