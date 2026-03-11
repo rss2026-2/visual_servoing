@@ -77,12 +77,14 @@ class YoloAnnotatorNode(Node):
         "chair", "couch", "tv", "laptop", "dining table", and many more. The list
         of available classes can be found in `self.model.names`.
         """
-        # TODO: Customize this dictionary for the lab. Choose a subset of
-        #       COCO class names to detect and their corresponding colors
-        #       in the annotated image.
         return {
             "chair": (255, 0, 0),
             "dining table": (0, 255, 0),
+            "laptop":(0,0,255),
+            "person":(150,0,150),
+            "cell phone":(0,150,150),
+            "bench":(150,150,0),
+            "couch":(100,20,30),
         }
 
     def on_image(self, msg: Image) -> None:
@@ -142,13 +144,28 @@ class YoloAnnotatorNode(Node):
         xyxy_np = xyxy.detach().cpu().numpy() if hasattr(xyxy, "detach") else np.asarray(xyxy)
         conf_np = conf.detach().cpu().numpy() if hasattr(conf, "detach") else np.asarray(conf)
         cls_np = cls.detach().cpu().numpy() if hasattr(cls, "detach") else np.asarray(cls)
-
-        # TODO: Store YOLO outputs as Detections. Iterate through xyxy_np, conf_np, and cls_np
-        #       to append a Detection with all its instance variables filled in to the
-        #       detections List.
-        #
-        # Hint: use Python's zip keyword to iterate through the three arrays in a single for loop.
-
+        """
+        class Detection:
+        class_id: int
+        class_name: str
+        confidence: float
+        # Bounding box coordinates in the original image:
+        x1: int
+        y1: int
+        x2: int
+        y2: int
+        """
+        for xyxy, conf, cls in zip(xyxy_np, conf_np, cls_np):
+            if cls not in self.allowed_cls:
+                continue
+            det = Detection(class_id=cls,
+                            class_name=self.model.names[cls],
+                            confidence=conf,
+                            x1=xyxy[0],
+                            x2=xyxy[2],
+                            y1=xyxy[1],
+                            y2=xyxy[3])
+            detections.append(det)
         return detections
 
     def draw_detections(
@@ -160,18 +177,21 @@ class YoloAnnotatorNode(Node):
         out_image = bgr_image.copy()
 
         for det in detections:
-            # TODO: Get the bounding box for the detection
+            boundingbox = ((det.x1,det.y1),(det.x2,det.y2))
 
-            # TODO: Draw the bounding box around the detection to the output image.
-            #       Use the colors you specified per class in `get_class_color_map`
-            #       by accessing the self.class_color_map dictionary.
-            #
-            # Hint: Use cv2's `rectangle` function to draw a rectangle on the annotated image.
+            cv2.rectangle(out_image,
+                          boundingbox[0],
+                          boundingbox[1],
+                          self.class_color_map[det.class_name],
+                          2)
 
-            # TODO: Label the box with the class name and confidence.
-            #
-            # Hint: Use cv2's `putText` function to put text on the annotated image.
-            raise NotImplementedError
+            cv2.putText(out_image,
+                        f"{det.class_name} {det.confidence}", # label
+                        (int(det.x1), int(det.y1) - 10), # org (where to place the text)
+                        cv2.FONT_HERSHEY_SIMPLEX, # font
+                        0.5, # font scale
+                        self.class_color_map[det.class_name], # text color
+                        2) # thickness
 
         return out_image
 
