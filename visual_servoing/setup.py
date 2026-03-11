@@ -13,6 +13,8 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('lib/' + package_name + "/computer_vision",
             glob.glob(os.path.join('visual_servoing/computer_vision', '*.py'))),
+        ('lib/' + package_name + "/computer_vision/test_images_cone",
+            glob.glob(os.path.join('visual_servoing/computer_vision/test_images_cone', '*.png'))),
         ('share/visual_servoing/visual_servoing/computer_vision/test_images_cone',
             glob.glob(os.path.join('test_images_cone', '*.png'))),
         ('share/visual_servoing/launch',
