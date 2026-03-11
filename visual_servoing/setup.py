@@ -13,12 +13,11 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('lib/' + package_name + "/computer_vision",
             glob.glob(os.path.join('visual_servoing/computer_vision', '*.py'))),
-        ('share/' + package_name + "computer_vision")
         ('share/visual_servoing/launch',
             glob.glob(os.path.join('launch', '*launch.xml'))),
         ('share/visual_servoing/launch',
             glob.glob(os.path.join('launch', '*launch.py'))),
-        (os.path.join('share', package_name, 'computer_vision'), glob('test_images_cone/*.png'))
+        (os.path.join('share/', package_name, '/computer_vision'), glob('test_images_cone/*.png'))
     ],
     install_requires=['setuptools'],
     zip_safe=True,
