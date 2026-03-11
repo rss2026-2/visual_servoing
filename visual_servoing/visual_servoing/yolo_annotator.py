@@ -161,10 +161,10 @@ class YoloAnnotatorNode(Node):
             det = Detection(class_id=cls,
                             class_name=self.model.names[cls],
                             confidence=conf,
-                            x1=float(xyxy[0]),
-                            x2=float(xyxy[2]),
-                            y1=float(xyxy[1]),
-                            y2=float(xyxy[3]))
+                            x1=int(xyxy[0]),
+                            x2=int(xyxy[2]),
+                            y1=int(xyxy[1]),
+                            y2=int(xyxy[3]))
             detections.append(det)
         return detections
 
