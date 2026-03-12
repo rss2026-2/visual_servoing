@@ -43,6 +43,20 @@ class ParkingController(Node):
         # YOUR CODE HERE
         # Use relative position and your control law to set drive_cmd
 
+
+        """We aren't aiming to give you a specific algorithm to run your controller, and we encourage you to play around. Try answering these questions:
+
+        1. What should the robot do if the cone is far in front?
+            Pure Persuit
+        2. What should the robot do if it is too close?
+            Reverse
+        3. What if the robot isn't too close or far, but the cone isn't directly in front of the robot?
+            reverse and steer towards, then go straight towards
+        4. How can we keep the cone in frame when we are using our real camera?
+            dont give super exageerated angles, don't go past"""
+
+
+
         #################################
 
         self.drive_pub.publish(drive_cmd)
@@ -59,6 +73,9 @@ class ParkingController(Node):
 
         # YOUR CODE HERE
         # Populate error_msg with relative_x, relative_y, sqrt(x^2+y^2)
+        error_msg.x_error = self.relative_x
+        error_msg.y_error = self.relative_y
+        error_msg.distance_error = np.sqrt(self.relative_x ** 2 + self.relative_y ** 2)
 
         #################################
 
