@@ -49,8 +49,7 @@ def create_filter_cascade(filter_list):
     return filter_cascade
 
 
-
-def cd_color_segmentation(img, template):
+def cd_color_segmentation(img, template, distances = None):
     """
     Implement the cone detection using color segmentation algorithm
     Input:
@@ -61,8 +60,11 @@ def cd_color_segmentation(img, template):
             (x1, y1) is the top left of the bbox and (x2, y2) is the bottom right of the bbox
     """
     ########## YOUR CODE STARTS HERE ##########
+    if distances is None:
+        distances = [0.15, 0.15, 0.6] #tuned parameters
+
     avg_template_hsv = get_hsv_from_template(template)
-    hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances = [0.15, 0.15, 0.5])
+    hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
 
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     color_mask = cv2.inRange(hsv_input_img, hsv_range["lower"], hsv_range["upper"])

@@ -65,7 +65,7 @@ def iou_score(bbox1, bbox2):
     return score
 
 
-def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False):
+def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False, range_param = None):
     """
     Test a cone detection function and return the average score based on all the test images
     Input:
@@ -95,7 +95,11 @@ def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False
                 template = cv2.imread(img_path)
                 img = cv2.imread(template_file_path)
             # Detection bbox
-            bbox_est = detection_func(img, template)
+
+            if range_param is not None:
+                bbox_est = detection_func(img, template, range_param)
+            else:
+                bbox_est = detection_func(img, template)
             score = iou_score(bbox_est, bbox_true)
 
             # Add score to dict
@@ -179,5 +183,32 @@ if __name__ == '__main__':
             
             print("Avg score: ", np.mean(list(scores.values())))
             print("Min score: ", np.min(list(scores.values())))
+    
+    elif len(sys.argv) == 6:
+        scores = None
+        algo_dict = dict({
+            "color": cd_color_segmentation,
+            "sift": cd_sift_ransac,
+            "template": cd_template_matching})
+        data_dict = dict({
+            "cone": (cone_csv_path, cone_template_path),
+            "map": (localization_csv_path, localization_template_path),
+            "citgo": (citgo_csv_path, citgo_template_path)})
+        swap = False
+        args = sys.argv[1:3]
+        range_param = sys.argv[3:]
+
+        if args[0] == "cone" and args[1] == "color":
+            scores = test_algorithm(
+                algo_dict[args[1]], data_dict[args[0]][0], data_dict[args[0]][1], swap=swap, range_param = [float(val) for val in range_param])
+        else:
+            print("Argument/s not recognized")
+
+        if scores:
+            # for (img, val) in scores.items():
+            #     print((img, val))
+            
+            print(np.mean(list(scores.values())),",",np.min(list(scores.values())))
     else:
+        print(len(sys.argv))
         print("too many arguments")
