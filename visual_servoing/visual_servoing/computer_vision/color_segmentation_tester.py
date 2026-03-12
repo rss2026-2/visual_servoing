@@ -14,7 +14,7 @@ from cv_test import  test_algorithm
 
 trials_directory = os.getcwd()+"/trials"
 
-def test_by_distance_range(distance_range):
+def run_test(distance_range, filter_specs):
     cone_csv_path = "./test_images_cone/test_images_cone.csv"
     cone_template_path = './test_images_cone/cone_template.png'
 
@@ -28,6 +28,7 @@ def test_by_distance_range(distance_range):
 
 def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
     trial_range = None
+    trial_filter_specs = None
     trial_avg_score = 0
     trial_min_score = None
 
@@ -46,19 +47,27 @@ def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
 
     rng = np.random.default_rng()
     for i in range(num_iterations):
-        new_distance_range = rng.random(size=(2,3))
-        new_score = test_by_distance_range(new_distance_range)
+        new_distance_range = rng.random(size=(3,2))
+        new_filter_specs = {
+            "switch": rng.choice([0,1], size = 6),
+            "sizes" : rng.choice([3,5,7], size = 6),
+            "iterations" : rng.choice([1,2,3,4,5], size = 6)
+        }
+        new_score = run_test(new_distance_range, new_filter_specs)
 
         if new_score: #if the distance range didn't fail on one of the tests
             new_avg, new_min = new_score["avg"], new_score["min"]
             if new_avg > trial_avg_score and new_min != 0:
                 trial_range = new_distance_range
+                trial_filter_specs = new_filter_specs
                 trial_avg_score = new_avg
                 trial_min_score = new_min
+                
 
                 if record_type == "jumps":
                     with open(txt_path, "a") as file:
-                        file.write("Iteration "+str(i)+":\n\tRange: "+str(trial_range)+"\n\tAvg: "+str(trial_avg_score)+"\n\tMin: "+str(trial_min_score)+"\n")
+                        record_msg = (f"Iteration {i}:\n\tRanges:\n\t\tHue: {trial_range[0]}\n\t\tSaturation: {trial_range[1]}\n\t\tValue: {trial_range[2]}\n\tAvg: {trial_avg_score}\n\tMin: {trial_min_score}\n\tFilter Specs: {trial_filter_specs}\n")
+                        file.write(record_msg)
 
                     pd.DataFrame([[i, trial_avg_score, trial_min_score]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
         
@@ -69,13 +78,13 @@ def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
             pd.DataFrame([[i, trial_avg_score, trial_min_score]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
 
 
-def bayesian_func(hue_low, hue_high, sat_low, sat_high, val_low, val_high):
-    distance_range = [(hue_low, hue_high), (sat_low, sat_high), (val_low, val_high)]
-    new_score = test_by_distance_range(distance_range)
-    if new_score:
-        return new_score["avg"]
-    else:
-        return 0
+# def bayesian_func(hue_low, hue_high, sat_low, sat_high, val_low, val_high, ):
+#     distance_range = [(hue_low, hue_high), (sat_low, sat_high), (val_low, val_high)]
+#     # new_score = test_by_distance_range(distance_range)
+#     if new_score:
+#         return new_score["avg"]
+#     else:
+#         return 0
 
 def run_trial_optimize(num_iterations, trial_name, record_type = "jumps"):
     param_bounds = {
@@ -123,7 +132,7 @@ def plot_trial(trial_name, show = True, save = True):
     
 
 if __name__ == '__main__':
-    iterations = 100
+    iterations = 1000
     num_trials = 3
     # for i in range(1, num_trials+1):
     #     trial_name = "trial_"+str(i)
@@ -132,5 +141,5 @@ if __name__ == '__main__':
 
     #     print("Trials ",i," / ", num_trials)
 
-    print(run_trial_optimize(iterations, "trial_1"))
+    run_trial_random(iterations, "trial_1")
     pass
