@@ -65,7 +65,7 @@ def iou_score(bbox1, bbox2):
     return score
 
 
-def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False, range_param = None):
+def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False, range_param = None, filter_param = None):
     """
     Test a cone detection function and return the average score based on all the test images
     Input:
@@ -96,10 +96,8 @@ def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False
                 img = cv2.imread(template_file_path)
             # Detection bbox
 
-            if range_param is not None:
-                bbox_est = detection_func(img, template, range_param)
-            else:
-                bbox_est = detection_func(img, template)
+
+            bbox_est = detection_func(img, template, range_param, filter_param)
 
             if not bbox_est: # if a box wasn't detected
                 score = 0
