@@ -5,6 +5,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+from bayes_opt import BayesianOptimization, acquisition
+
 from datetime import datetime
 
 
@@ -31,7 +33,7 @@ def test_by_distance_range(distance_range):
     except FileNotFoundError:
         pass
 
-def run_trial(num_iterations, trial_name, record_type = "jumps"):
+def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
     trial_range = None
     trial_avg_score = 0
     trial_min_score = None
@@ -51,7 +53,7 @@ def run_trial(num_iterations, trial_name, record_type = "jumps"):
 
     rng = np.random.default_rng()
     for i in range(num_iterations):
-        new_distance_range = rng.random(size=3)
+        new_distance_range = rng.random(size=6)
         new_score = test_by_distance_range(new_distance_range)
 
         if new_score: #if the distance range didn't fail on one of the tests
@@ -73,6 +75,44 @@ def run_trial(num_iterations, trial_name, record_type = "jumps"):
             
             pd.DataFrame([[i, trial_avg_score, trial_min_score]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
 
+
+def bayesian_func(hue_low, hue_high, sat_low, sat_high, val_low, val_high):
+    distance_range = [hue_low, hue_high, sat_low, sat_high, val_low, val_high]
+    new_score = test_by_distance_range(distance_range)
+    if new_score:
+        return new_score["avg"]
+    else:
+        return 0
+
+def run_trial_optimize(num_iterations, trial_name, record_type = "jumps"):
+    param_bounds = {
+        'hue_low': (0.0, 1.0), 
+        'hue_high': (0.0, 1.0),
+        'sat_low': (0.0, 1.0),
+        'sat_high': (1.0, 1.0),
+        'val_low': (0.0, 1.0),
+        'val_high': (1.0, 1.0),
+    }
+    acquisition_function = acquisition.ExpectedImprovement(xi=0.0)
+    optimizer = BayesianOptimization(
+        f = bayesian_func,
+        acquisition_function=acquisition_function,
+        pbounds = param_bounds,
+    )
+
+    optimizer.probe(
+        params =  {'hue_low': np.float64(0.3974032963932183), 'hue_high': np.float64(0.483277763345553), 'sat_low': np.float64(0.1995677462114977), 'sat_high': np.float64(1.0), 'val_low': np.float64(0.5490086482373446), 'val_high': np.float64(1.0)},
+        lazy = True
+    )
+
+    optimizer.maximize(
+        init_points = 10,
+        n_iter = num_iterations,
+
+    )
+
+    return optimizer.max
+
 def plot_trial(trial_name, show = True, save = True):
     trial_csv_path = trials_directory+"/"+trial_name+"/"+trial_name+".csv"
     df = pd.read_csv(trial_csv_path)
@@ -90,13 +130,14 @@ def plot_trial(trial_name, show = True, save = True):
     
 
 if __name__ == '__main__':
-    iterations = 1000
-    num_trials = 10
-    for i in range(1, num_trials+1):
-        trial_name = "trial_"+str(i)
-        run_trial(iterations, trial_name)
-        plot_trial(trial_name, show=False)
+    iterations = 100
+    num_trials = 3
+    # for i in range(1, num_trials+1):
+    #     trial_name = "trial_"+str(i)
+    #     run_trial_random(iterations, trial_name)
+    #     plot_trial(trial_name, show=False)
 
-        print("Trials ",i," / ", num_trials)
+    #     print("Trials ",i," / ", num_trials)
 
+    print(run_trial_optimize(iterations, "trial_1"))
     pass

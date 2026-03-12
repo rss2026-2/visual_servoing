@@ -135,34 +135,57 @@ def get_hsv_from_template(template_img):
     return avg_hsv
 
 def get_hsv_range_by_distance(hsv, distances):
-    """
-    Constructs a range of hsv colors based on the distances of the hue, saturation, and value from an average hsv value
+    hue_dist_below, hue_dist_above = distances[0]
+    sat_dist_below, sat_dist_above = distances[1]
+    val_dist_below, val_dist_above = distances[2]
 
-    Input:
-        hsv: The average hsv value,
-        distances: A 1x3 array with distances in between 0 and 1 for the hue, saturation, and value
-    
-    Returns:
-        A dictionary with keys {"lower", "upper"} corresponding to the lowest and highest hsv value within the range
-    """
-    hue_dist, sat_dist, val_dist = distances
-    hue_max = 179
-    sat_max = 255
-    val_max = 255
+    hue_max, sat_max, val_max = 179, 255, 255
 
     hue, sat, val = hsv
+    
     lower_bound = np.array([
-        max(0, hue - hue_dist*hue_max), 
-        max(0, sat - sat_dist*sat_max), 
-        max(0, val - val_dist*val_max)
-    ])
-    upper_bound = np.array([
-        min(hue_max, hue + hue_dist*hue_max), 
-        min(sat_max, sat + sat_dist*sat_max), 
-        min(val_max, val + val_dist*val_max)
+        hue - (hue * hue_dist_below),
+        sat - (sat * sat_dist_below),
+        val - (val * val_dist_below)
     ])
 
+    upper_bound = np.array([
+        hue + (hue_max - hue) * hue_dist_above,
+        sat + (sat_max - sat) * sat_dist_above,
+        val + (val_max - val) * val_dist_above
+    ])
+    
     return {"lower": lower_bound, "upper": upper_bound}
+
+# def get_hsv_range_by_distance(hsv, distances):
+#     """
+#     Constructs a range of hsv colors based on the distances of the hue, saturation, and value from an average hsv value
+
+#     Input:
+#         hsv: The average hsv value,
+#         distances: A 1x3 array with distances in between 0 and 1 for the hue, saturation, and value
+    
+#     Returns:
+#         A dictionary with keys {"lower", "upper"} corresponding to the lowest and highest hsv value within the range
+#     """
+#     hue_dist, sat_dist, val_dist = distances
+#     hue_max = 179
+#     sat_max = 255
+#     val_max = 255
+
+#     hue, sat, val = hsv
+#     lower_bound = np.array([
+#         max(0, hue - hue_dist*hue_max), 
+#         max(0, sat - sat_dist*sat_max), 
+#         max(0, val - val_dist*val_max)
+#     ])
+#     upper_bound = np.array([
+#         min(hue_max, hue + hue_dist*hue_max), 
+#         min(sat_max, sat + sat_dist*sat_max), 
+#         min(val_max, val + val_dist*val_max)
+#     ])
+
+#     return {"lower": lower_bound, "upper": upper_bound}
 
 if testing:
     cone_image = get_cone_image(17)

@@ -184,7 +184,7 @@ if __name__ == '__main__':
             print("Avg score: ", np.mean(list(scores.values())))
             print("Min score: ", np.min(list(scores.values())))
     
-    elif len(sys.argv) == 6:
+    elif len(sys.argv) == 9:
         scores = None
         algo_dict = dict({
             "color": cd_color_segmentation,
@@ -196,11 +196,16 @@ if __name__ == '__main__':
             "citgo": (citgo_csv_path, citgo_template_path)})
         swap = False
         args = sys.argv[1:3]
-        range_param = sys.argv[3:]
+
+        hue_range = sys.argv[3:5]
+        sat_range = sys.argv[5:7]
+        val_range = sys.argv[7:]
+
+        range_param = np.array([hue_range, sat_range, val_range], dtype = float)
 
         if args[0] == "cone" and args[1] == "color":
             scores = test_algorithm(
-                algo_dict[args[1]], data_dict[args[0]][0], data_dict[args[0]][1], swap=swap, range_param = [float(val) for val in range_param])
+                algo_dict[args[1]], data_dict[args[0]][0], data_dict[args[0]][1], swap=swap, range_param = range_param)
         else:
             print("Argument/s not recognized")
 
@@ -211,4 +216,4 @@ if __name__ == '__main__':
             print(np.mean(list(scores.values())),",",np.min(list(scores.values())))
     else:
         print(len(sys.argv))
-        print("too many arguments")
+        print("incorrect number of arguments")
