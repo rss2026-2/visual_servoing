@@ -61,7 +61,7 @@ def cd_color_segmentation(img, template, distances = None):
     """
     ########## YOUR CODE STARTS HERE ##########
     if distances is None:
-        distances = [0.15, 0.15, 0.6] #tuned parameters
+        distances = [0.40395939, 0.21454798, 0.60708237] #tuned parameters
 
     avg_template_hsv = get_hsv_from_template(template)
     hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
@@ -165,5 +165,6 @@ def get_hsv_range_by_distance(hsv, distances):
     return {"lower": lower_bound, "upper": upper_bound}
 
 if testing:
-    cone_image = get_cone_image(7)
-    cd_color_segmentation(cone_image, cv2.imread("./visual_servoing/computer_vision/test_images_cone/cone_template.png"))
+    cone_image = get_cone_image(17)
+    test_range = [0.40395939, 0.21454798, 0.60708237]
+    cd_color_segmentation(cone_image, cv2.imread("./visual_servoing/computer_vision/test_images_cone/cone_template.png"), distances = test_range)
