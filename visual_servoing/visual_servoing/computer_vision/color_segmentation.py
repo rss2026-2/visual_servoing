@@ -48,8 +48,20 @@ def create_filter_cascade(filter_list):
 
     return filter_cascade
 
+def filter_list_from_filter_specs(filter_specs):
+    filter_lis = []
+    switch, sizes, iterations = filter_specs["switch"], filter_specs["sizes"], filter_specs["iterations"]
+    for i,val in enumerate(switch):
+        if val == 1:
+            if i % 2 == 0: # erosion filter
+                filter_lis.append(erosion_filter(box_size = sizes[i], iterations = iterations[i]))
+            else: # dilation filter
+                filter_lis.append(dilation_filter(box_size = sizes[i], iterations = iterations[i]))
+    
+    return filter_lis
 
-def cd_color_segmentation(img, template, distances = None):
+
+def cd_color_segmentation(img, template, distances = None, filter_specs = None):
     """
     Implement the cone detection using color segmentation algorithm
     Input:
@@ -63,16 +75,22 @@ def cd_color_segmentation(img, template, distances = None):
     if distances is None:
         distances = [0.40395939, 0.21454798, 0.60708237] #tuned parameters
 
+    if filter_specs is None:
+        filter_specs = {
+            "switch": [1,1,0,0,0,0],
+            "sizes": [5,5,0,0,0,0],
+            "iterations": [1,2,0,0,0,0]
+        }
+
     avg_template_hsv = get_hsv_from_template(template)
     hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
 
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     color_mask = cv2.inRange(hsv_input_img, hsv_range["lower"], hsv_range["upper"])
 
-    filter_cascade = create_filter_cascade([
-        erosion_filter(5, 1),
-        dilation_filter(5, 2)
-    ])
+    filter_cascade = create_filter_cascade(
+        filter_list_from_filter_specs(filter_specs)
+    )
 
     filtered_mask = filter_cascade(color_mask)
  

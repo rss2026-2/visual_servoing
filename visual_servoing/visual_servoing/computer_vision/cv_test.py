@@ -100,7 +100,11 @@ def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False
                 bbox_est = detection_func(img, template, range_param)
             else:
                 bbox_est = detection_func(img, template)
-            score = iou_score(bbox_est, bbox_true)
+
+            if not bbox_est: # if a box wasn't detected
+                score = 0
+            else:
+                score = iou_score(bbox_est, bbox_true)
 
             # Add score to dict
             scores[img_path] = score
@@ -183,37 +187,6 @@ if __name__ == '__main__':
             
             print("Avg score: ", np.mean(list(scores.values())))
             print("Min score: ", np.min(list(scores.values())))
-    
-    elif len(sys.argv) == 9:
-        scores = None
-        algo_dict = dict({
-            "color": cd_color_segmentation,
-            "sift": cd_sift_ransac,
-            "template": cd_template_matching})
-        data_dict = dict({
-            "cone": (cone_csv_path, cone_template_path),
-            "map": (localization_csv_path, localization_template_path),
-            "citgo": (citgo_csv_path, citgo_template_path)})
-        swap = False
-        args = sys.argv[1:3]
-
-        hue_range = sys.argv[3:5]
-        sat_range = sys.argv[5:7]
-        val_range = sys.argv[7:]
-
-        range_param = np.array([hue_range, sat_range, val_range], dtype = float)
-
-        if args[0] == "cone" and args[1] == "color":
-            scores = test_algorithm(
-                algo_dict[args[1]], data_dict[args[0]][0], data_dict[args[0]][1], swap=swap, range_param = range_param)
-        else:
-            print("Argument/s not recognized")
-
-        if scores:
-            # for (img, val) in scores.items():
-            #     print((img, val))
-            
-            print(np.mean(list(scores.values())),",",np.min(list(scores.values())))
     else:
         print(len(sys.argv))
         print("incorrect number of arguments")

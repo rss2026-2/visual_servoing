@@ -1,5 +1,4 @@
 import os
-import subprocess
 
 import numpy as np
 import pandas as pd
@@ -9,29 +8,23 @@ from bayes_opt import BayesianOptimization, acquisition
 
 from datetime import datetime
 
+from color_segmentation import cd_color_segmentation
+
+from cv_test import  test_algorithm
 
 trials_directory = os.getcwd()+"/trials"
 
 def test_by_distance_range(distance_range):
-    command = ["python", "cv_test.py", "cone", "color", *[str(val) for val in distance_range]]
+    cone_csv_path = "./test_images_cone/test_images_cone.csv"
+    cone_template_path = './test_images_cone/cone_template.png'
 
-    try:
-        # Run the command, capture output, and use text=True for string output (Python 3.7+)
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            check=True  # Raise an exception if the command fails
-        )
+    scores = test_algorithm(cd_color_segmentation, cone_csv_path, cone_template_path, range_param = distance_range)
 
-        # Read the output from the terminal (stdout and stderr)
-        avg_score, min_score = [float(val) for val in result.stdout.split(",")]
-        return {"avg":avg_score, "min":min_score}
-
-    except subprocess.CalledProcessError as e:
-        pass
-    except FileNotFoundError:
-        pass
+    if scores:
+        return {
+            "avg" : np.mean(list(scores.values())),
+            "min" : np.min(list(scores.values()))
+        }
 
 def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
     trial_range = None
@@ -53,7 +46,7 @@ def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
 
     rng = np.random.default_rng()
     for i in range(num_iterations):
-        new_distance_range = rng.random(size=6)
+        new_distance_range = rng.random(size=(2,3))
         new_score = test_by_distance_range(new_distance_range)
 
         if new_score: #if the distance range didn't fail on one of the tests
@@ -77,7 +70,7 @@ def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
 
 
 def bayesian_func(hue_low, hue_high, sat_low, sat_high, val_low, val_high):
-    distance_range = [hue_low, hue_high, sat_low, sat_high, val_low, val_high]
+    distance_range = [(hue_low, hue_high), (sat_low, sat_high), (val_low, val_high)]
     new_score = test_by_distance_range(distance_range)
     if new_score:
         return new_score["avg"]
