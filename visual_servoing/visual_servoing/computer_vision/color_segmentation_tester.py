@@ -38,14 +38,15 @@ def run_trial_random(num_iterations, trial_name):
         current_time = datetime.now().strftime("%I:%M:%S %p %h %d, %Y")
         file.write("[ "+trial_name+"] ("+current_time+")\nTotal Iterations: "+str(num_iterations)+"\n\n")
 
-    columns_lis = ["Iteration #", "Avg", "Min"]
+    columns_lis = ["Iteration #", "Avg", "Min", "Avg_Min_Mean"]
     pd.DataFrame(columns = columns_lis).to_csv(csv_path, mode="a",index=False)
 
     trial_data = { #stores best data of current trial
         "range": None,
         "filter_specs": None,
         "avg": 0,
-        "min": None,
+        "min": 0,
+        "avg_min_mean": 0,
         "params": None
     }
 
@@ -61,20 +62,25 @@ def run_trial_random(num_iterations, trial_name):
 
         if new_score: #if the distance range didn't fail on one of the tests
             new_avg, new_min = new_score["avg"], new_score["min"]
-            if new_avg > trial_data["avg"]:
+
+            new_avg_min_mean = (new_avg + new_min) / 2
+
+            if new_avg_min_mean > trial_data["avg_min_mean"]:
+            # if new_avg > trial_data["avg"]:
                 trial_data["range"] = new_distance_range
                 trial_data["filter_specs"] = new_filter_specs
                 trial_data["avg"] = new_avg
                 trial_data["min"] = new_min
+                trial_data["avg_min_mean"] = new_avg_min_mean
                 trial_data["params"] = (new_distance_range, new_filter_specs)
                 
 
                 with open(txt_path, "a") as file:
                     file.write(create_trial_record(iter = i, data = trial_data))
 
-                pd.DataFrame([[i, trial_data["avg"], trial_data["min"]]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
+                pd.DataFrame([[i, trial_data["avg"], trial_data["min"], trial_data["avg_min_mean"]]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
     
-    return f"Avg: {trial_data["avg"]}\nMin: {trial_data["min"]}\nParams: {trial_data["params"]}"
+    return f"Avg: {trial_data["avg"]}\nMin: {trial_data["min"]}\nAvg_Min_Mean: {trial_data["avg_min_mean"]}\nParams: {trial_data["params"]}"
 
 
 def bayesian_func(hue_low, hue_high, sat_low, sat_high, val_low, val_high, 
@@ -178,15 +184,15 @@ def run_trial_bayesian(num_iterations, trial_name):
     return f"Avg: {trial_data["avg"]}\nMin: {trial_data["min"]}\nParams: {trial_data["params"]}"
 
 def create_trial_record(iter, data):
-    trial_range, trial_filter_specs, trial_avg, trial_min = data["range"], data["filter_specs"], data["avg"], data["min"]
     record_msg = f"""Iteration {iter}:
     Ranges:
-        Hue: {trial_range[0]}
-        Saturation: {trial_range[1]}
-        Value: {trial_range[2]}
-    Avg: {trial_avg}
-    Min: {trial_min}
-    Filter Specs: {trial_filter_specs}
+        Hue: {data["range"][0]}
+        Saturation: {data["range"][1]}
+        Value: {data["range"][2]}
+    Avg: {data["avg"]}
+    Min: {data["min"]}
+    Avg_Min_Mean: {data["avg_min_mean"]}
+    Filter Specs: {data["filter_specs"]}
 
 """
     return record_msg
@@ -195,9 +201,10 @@ def plot_trial(trial_name, show = True, save = True):
     trial_csv_path = trials_directory+"/"+trial_name+"/"+trial_name+".csv"
     df = pd.read_csv(trial_csv_path)
 
-    ax = df.plot(kind="line", x="Iteration #", y=["Avg", "Min"], title=trial_name, ylim=(0.0,1.0))
+    ax = df.plot(kind="line", x="Iteration #", y=["Avg", "Min", "Avg_Min_Mean"], title=trial_name, ylim=(0.0,1.0))
     ax.scatter(df["Iteration #"], df["Avg"])
     ax.scatter(df["Iteration #"], df["Min"])
+    ax.scatter(df["Iteration #"], df["Avg_Min_Mean"])
 
     if save:
         trial_save_path = trials_directory+"/"+trial_name+"/"+trial_name+".png"
@@ -205,12 +212,12 @@ def plot_trial(trial_name, show = True, save = True):
 
     if show:
         plt.show()
-    
-def run_trials(num_trials, num_iterations, trial_type = "random", plot = True):
+
+def run_trials(num_trials, num_iterations, trial_name, trial_type = "random", plot = True):
     print("Trials Started")
 
     for i in range(1, num_trials+1):
-        trial_name = trial_type+"_"+"trial_"+str(i)
+        trial_name = trial_type+"_"+trial_name+"_trial_"+str(i)
 
         if trial_type == "random":
             print(run_trial_random(num_iterations, trial_name))
@@ -223,9 +230,11 @@ def run_trials(num_trials, num_iterations, trial_type = "random", plot = True):
         print("Trials ",i," / ", num_trials," Completed")
 
 if __name__ == '__main__':
-    run_trials(
-        num_trials = 6,
-        num_iterations = 300,
-        trial_type = "bayesian"
-    )
+    # run_trials(
+    #     num_trials = 6,
+    #     num_iterations = 300,
+    #     trial_type = "bayesian"
+    # )
+
+    run_trials(1, 1000, "yoshi", "random", True)
     pass
