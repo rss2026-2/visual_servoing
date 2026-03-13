@@ -54,7 +54,8 @@ def cd_sift_ransac(img, template):
     # Find and store good matches
     good = []
     for m, n in matches:
-        if m.distance < 0.75*n.distance:
+        if m.distance < 0.75*n.distance: # Lowe's ratio test
+            # accept match m if it is singinifactly better than the second best match
             good.append(m)
 
     # If enough good matches, find bounding box
@@ -69,11 +70,19 @@ def cd_sift_ransac(img, template):
         h, w = template.shape
         pts = np.float32([[0, 0], [0, h-1], [w-1, h-1], [w-1, 0]]).reshape(-1, 1, 2)
 
-        ########## YOUR CODE STARTS HERE ##########
+        # use homography M to map pts onto img
+        corner_pts = cv2.perspectiveTransform(pts, M)
 
-        x_min = y_min = x_max = y_max = 0
+        # find min/max across corner points
+        x_min, x_max = corner_pts[...,0].min(), corner_pts[...,0].max()
+        y_min, y_max = corner_pts[...,1].min(), corner_pts[...,1].max()
 
-        ########### YOUR CODE ENDS HERE ###########
+        h0, w0, _ = img.shape
+        # clamp to original image
+        x_min = max(0,x_min)
+        x_max = min(w0,x_max)
+        y_min = max(0,y_min)
+        y_max = min(h0,y_max)
 
         # Return bounding box
         return ((x_min, y_min), (x_max, y_max))
@@ -103,7 +112,7 @@ def cd_template_matching(img, template):
     (img_height, img_width) = img_canny.shape[:2]
 
     # Keep track of best-fit match
-    best_match = None
+    best_match = (-float("inf"),(0,0),(0,0))
 
     # Loop over different scales of image
     for scale in np.linspace(1.5, .5, 50):
@@ -115,13 +124,36 @@ def cd_template_matching(img, template):
         if resized_template.shape[0] > img_height or resized_template.shape[1] > img_width:
             continue
 
-        ########## YOUR CODE STARTS HERE ##########
         # Use OpenCV template matching functions to find the best match
         # across template scales.
 
-        # Remember to resize the bounding box using the highest scoring scale
-        # x1,y1 pixel will be accurate, but x2,y2 needs to be correctly scaled
-        bounding_box = ((0, 0), (0, 0))
-        ########### YOUR CODE ENDS HERE ###########
+        method = cv2.TM_CCOEFF_NORMED # returns values between 0 and 1
+        res = cv2.matchTemplate(img_canny,resized_template,method)
+        _, max_val, _, max_loc = cv2.minMaxLoc(res)
 
+        if max_val > best_match[0]:
+            best_match = (max_val, max_loc, (w,h))
+
+    # Remember to resize the bounding box using the highest scoring scale
+    # x1,y1 pixel will be accurate, but x2,y2 needs to be correctly scaled
+    bounding_box = (best_match[1],
+                    (best_match[1][0]+best_match[2][0],best_match[1][1]+best_match[2][1])
+                    )
     return bounding_box
+
+def show_image(img, bounding_box, alg):
+    new_img = img.copy()
+    pt1 = (int(bounding_box[0][0]), int(bounding_box[0][1]))
+    pt2 = (int(bounding_box[1][0]), int(bounding_box[1][1]))
+    cv2.rectangle(new_img, pt1, pt2, (255, 0, 0), 2)
+    cv2.putText(new_img, alg, (pt1[0], pt1[1] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+    cv2.imwrite(f"{alg}.png", new_img)
+
+citgo_template = cv2.imread("./test_images_citgo/citgo_template.png",0)
+img = cv2.imread("./test_images_citgo/citgo1.jpeg")
+bb = cd_sift_ransac(img, citgo_template)
+show_image(img, bb, "sift")
+
+bb = cd_template_matching(img, citgo_template)
+show_image(img, bb, "template")
