@@ -4,7 +4,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from bayes_opt import BayesianOptimization, acquisition
+from bayes_opt import BayesianOptimization
+
+# from bayes_opt.logger import JSONLogger
 
 from datetime import datetime
 
@@ -26,7 +28,7 @@ def run_test(distance_range, filter_specs):
             "min" : np.min(list(scores.values()))
         }
 
-def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
+def run_trial_random(num_iterations, trial_name):
     trial_range = None
     trial_filter_specs = None
     trial_avg_score = 0
@@ -40,7 +42,7 @@ def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
 
     with open(txt_path, "a") as file:
         current_time = datetime.now().strftime("%I:%M:%S %p %h %d, %Y")
-        file.write("[ "+trial_name+"] ("+current_time+")\nTotal Iterations: "+str(num_iterations)+"\nRecord Type: "+record_type+"\n\n")
+        file.write("[ "+trial_name+"] ("+current_time+")\nTotal Iterations: "+str(num_iterations)+"\n\n")
 
     columns_lis = ["Iteration #", "Avg", "Min"]
     pd.DataFrame(columns = columns_lis).to_csv(csv_path, mode="a",index=False)
@@ -64,18 +66,11 @@ def run_trial_random(num_iterations, trial_name, record_type = "jumps"):
                 trial_min_score = new_min
                 
 
-                if record_type == "jumps":
-                    with open(txt_path, "a") as file:
-                        record_msg = (f"Iteration {i}:\n\tRanges:\n\t\tHue: {trial_range[0]}\n\t\tSaturation: {trial_range[1]}\n\t\tValue: {trial_range[2]}\n\tAvg: {trial_avg_score}\n\tMin: {trial_min_score}\n\tFilter Specs: {trial_filter_specs}\n")
-                        file.write(record_msg)
+         
+                with open(txt_path, "a") as file:
+                    file.write(create_trial_record(iter = i, range = trial_range, filter_specs = trial_filter_specs, avg = trial_avg_score, min = trial_min_score))
 
-                    pd.DataFrame([[i, trial_avg_score, trial_min_score]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
-        
-        if record_type == "periodic" and i%(i//10) == 0:
-            with open(txt_path, "a") as file:
-                file.write("Iteration "+str(i)+":\n\tRange: "+str(trial_range)+"\n\tAvg: "+str(trial_avg_score)+"\n\tMin: "+str(trial_min_score)+"\n")
-            
-            pd.DataFrame([[i, trial_avg_score, trial_min_score]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
+                pd.DataFrame([[i, trial_avg_score, trial_min_score]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
 
 
 def bayesian_func(hue_low, hue_high, sat_low, sat_high, val_low, val_high, 
@@ -91,17 +86,20 @@ def bayesian_func(hue_low, hue_high, sat_low, sat_high, val_low, val_high,
     }
     new_score = run_test(distance_range, filter_specs)
     if new_score:
-        return new_score["avg"]
-    else:
-        return 0
+        return {"distance_range": distance_range,
+                "filter_specs": filter_specs,
+                "score" : new_score
+                }
+    
 
-def run_trial_optimize(num_iterations, trial_name, record_type = "jumps"):
+def run_trial_bayesian(num_iterations, trial_name):
     param_bounds = {
         'hue_low': (0.0, 1.0), 
         'hue_high': (0.0, 1.0),
         'sat_low': (0.0, 1.0),
         'sat_high': (1.0, 1.0),
-        'val_low': (0.0, 1.0),    'val_high': (1.0, 1.0),
+        'val_low': (0.0, 1.0),    
+        'val_high': (1.0, 1.0),
     }
 
     max_filters = 6
@@ -118,19 +116,69 @@ def run_trial_optimize(num_iterations, trial_name, record_type = "jumps"):
         f = bayesian_func,
         # acquisition_function=acquisition_function,
         pbounds = param_bounds,
+        verbose = 1
     )
+
+    trial_directory = trials_directory+"/"+trial_name
+    os.makedirs(trial_directory, exist_ok = True)
+
+    txt_path = trial_directory+"/"+trial_name+".txt"
+    csv_path = trial_directory+"/"+trial_name+".csv"
+
+    with open(txt_path, "a") as file:
+        current_time = datetime.now().strftime("%I:%M:%S %p %h %d, %Y")
+        file.write("[ "+trial_name+"] ("+current_time+")\nTotal Iterations: "+str(num_iterations)+"\n\n")
+
+    columns_lis = ["Iteration #", "Avg", "Min"]
+    pd.DataFrame(columns = columns_lis).to_csv(csv_path, mode="a",index=False)
+    
+    trial_range = None
+    trial_filter_specs = None
+    trial_avg_score = 0
+    trial_min_score = None
+
+    for i in range(num_iterations):
+        new_params = optimizer.suggest()
+        new_results = bayesian_func(**new_params)
+        new_avg, new_min = new_results["score"]["avg"], new_results["score"]["min"]
+        optimizer.register(params = new_params, target = new_avg)
+
+        if new_avg > trial_avg_score:
+            trial_range = np.array(new_results["distance_range"]).tolist()
+            trial_filter_specs = np.array(new_results["filter_specs"]).tolist()
+            trial_avg_score = new_avg
+            trial_min_score = new_min
+
+            with open(txt_path, "a") as file:
+                file.write(create_trial_record(iter = i, range = trial_range, filter_specs = trial_filter_specs, avg = trial_avg_score, min = trial_min_score))
+
+            pd.DataFrame([[i, trial_avg_score, trial_min_score]], columns = columns_lis).to_csv(csv_path, mode="a", index=False, header = False)
 
     # optimizer.probe(
     #     params =  {'hue_low': np.float64(0.3974032963932183), 'hue_high': np.float64(0.483277763345553), 'sat_low': np.float64(0.1995677462114977), 'sat_high': np.float64(1.0), 'val_low': np.float64(0.5490086482373446), 'val_high': np.float64(1.0)},
     #     lazy = True
     # )
     #| 35        | 0.8549207 | 0.8167585 | 0.7338955 | 0.1976128 | 1.0       | 0.2217446 | 1.0       | 0.7823677 | 6.0314428 | 5.1787788 | 1.0687893 | 5.0223946 | 4.2553392 | 1.4945291 | 4.7400167 | 3.1656142 | 0.9635839 | 8.0       | 1.7617630 | 0.0       | 5.1914982 | 1.1159275 | 0.0       | 8.0       | 4.1078981 
-    optimizer.maximize(
-        init_points = 30,
-        n_iter = num_iterations
-    )
+    #96        | 0.8942409 | 0.3352851 | 0.8509637 | 0.1847463 | 1.0       | 0.3965662 | 1.0       | 0.6730489 | 7.3115551 | 4.5004591 | 1.3942604 | 5.8895328 | 2.5250913 | 0.2060162 | 5.0110798 | 1.2222393 | 0.7157372 | 5.0243335 | 4.8877056 | 1.0967970 | 7.0311750 | 1.7833632 | 0.8650465 | 4.5582466 | 5.1768997 |
+    # trial_directory = trials_directory+"/"+trial_name
+    # os.makedirs(trial_directory, exist_ok = True)
 
-    return optimizer.max
+    # json_path = trial_directory+"/logs.json"
+    # logger = JSONLogger(json_path)
+    # optimizer.subscribe(Events.OPTIMIZATION_STEP, logger)
+
+def create_trial_record(iter, range, filter_specs, avg, min):
+    record_msg = f"""Iteration {iter}:
+    Ranges:
+        Hue: {range[0]}
+        Saturation: {range[1]}
+        Value: {range[2]}
+    Avg: {avg}
+    Min: {min}
+    Filter Specs: {filter_specs}
+
+"""
+    return record_msg
 
 def plot_trial(trial_name, show = True, save = True):
     trial_csv_path = trials_directory+"/"+trial_name+"/"+trial_name+".csv"
@@ -147,17 +195,25 @@ def plot_trial(trial_name, show = True, save = True):
     if show:
         plt.show()
     
+def run_trials(num_trials, num_iterations, trial_type = "random", plot = True):
+    print("Trials Started")
+    for i in range(1, num_trials+1):
+        trial_name = trial_type+"_"+"trial_"+str(i)
+
+        if trial_type == "random":
+            run_trial_random(num_iterations, trial_name)
+        elif trial_type == "bayesian":
+            run_trial_bayesian(num_iterations, trial_name)
+        
+        if plot:
+            plot_trial(trial_name, show = False)
+
+        print("Trials ",i," / ", num_trials)
 
 if __name__ == '__main__':
-    iterations = 1000
-    num_trials = 3
-    # for i in range(1, num_trials+1):
-    #     trial_name = "trial_"+str(i)
-    #     run_trial_random(iterations, trial_name)
-    #     plot_trial(trial_name, show=False)
-
-    #     print("Trials ",i," / ", num_trials)
-
-    run_trial_optimize(iterations, "buggy")
-
+    run_trials(
+        num_trials = 3,
+        num_iterations = 100,
+        trial_type = "bayesian"
+    )
     pass
