@@ -1,0 +1,111 @@
+[ bayesian_trial_2] (02:51:54 AM Mar 13, 2026)
+Total Iterations: 300
+
+Iteration 0:
+    Ranges:
+        Hue: [0.7874488757760787, 0.4966288568365548]
+        Saturation: [0.7647550875427054, 1.0]
+        Value: [0.4550505516644491, 1.0]
+    Avg: 0.05699326937328848
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([2, 4, 2, 7, 5, 7]), 'iterations': array([5, 1, 5, 5, 1, 3])}
+
+Iteration 1:
+    Ranges:
+        Hue: [0.2900928637133653, 0.21214924646213706]
+        Saturation: [0.46455493777334234, 1.0]
+        Value: [0.7632346957975412, 1.0]
+    Avg: 0.24159680357781968
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([2, 4, 5, 3, 3, 5]), 'iterations': array([2, 1, 2, 4, 3, 2])}
+
+Iteration 2:
+    Ranges:
+        Hue: [0.041977731004058993, 0.17809329660796513]
+        Saturation: [0.5422100737575885, 1.0]
+        Value: [0.15933107775368083, 1.0]
+    Avg: 0.5633770488277482
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([2, 4, 3, 3, 4, 7]), 'iterations': array([1, 1, 2, 4, 2, 3])}
+
+Iteration 4:
+    Ranges:
+        Hue: [0.7350113103155448, 0.06737416832132126]
+        Saturation: [0.9346834464274623, 1.0]
+        Value: [0.25711135102671434, 1.0]
+    Avg: 0.6934899603065715
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([4, 4, 7, 5, 5, 4]), 'iterations': array([3, 2, 2, 3, 2, 5])}
+
+Iteration 6:
+    Ranges:
+        Hue: [0.44346562003637635, 0.22255033925797418]
+        Saturation: [0.6068900045346065, 1.0]
+        Value: [0.21919044423466416, 1.0]
+    Avg: 0.7350066506204321
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([2, 4, 6, 7, 4, 2]), 'iterations': array([3, 2, 1, 2, 3, 3])}
+
+Iteration 8:
+    Ranges:
+        Hue: [0.6280796278470775, 0.07432709487817846]
+        Saturation: [0.5501500080322974, 1.0]
+        Value: [0.23226541912503418, 1.0]
+    Avg: 0.8185854396025463
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([4, 4, 2, 2, 6, 3]), 'iterations': array([2, 2, 2, 4, 1, 2])}
+
+Iteration 14:
+    Ranges:
+        Hue: [0.6603484337541075, 0.6762392379069708]
+        Saturation: [0.19174625726903016, 1.0]
+        Value: [0.31571614956126925, 1.0]
+    Avg: 0.8806258642430761
+    Min: 0.6975668959140033
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([4, 4, 7, 4, 2, 2]), 'iterations': array([2, 1, 1, 1, 4, 5])}
+
+Iteration 23:
+    Ranges:
+        Hue: [0.42092047736329435, 0.8953265199091694]
+        Saturation: [0.08179323339581507, 1.0]
+        Value: [0.416411815900208, 1.0]
+    Avg: 0.8650454523368264
+    Min: 0.7336956521739131
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([5, 4, 6, 4, 4, 4]), 'iterations': array([1, 1, 1, 1, 4, 3])}
+
+Iteration 58:
+    Ranges:
+        Hue: [0.7348006277419189, 0.9511275714521963]
+        Saturation: [0.12131135619671714, 1.0]
+        Value: [0.37015333853835297, 1.0]
+    Avg: 0.8782458765824993
+    Min: 0.7221869040050858
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([4, 4, 6, 4, 2, 2]), 'iterations': array([3, 1, 1, 1, 4, 5])}
+
+Iteration 71:
+    Ranges:
+        Hue: [0.6034939189441753, 0.8754410582434121]
+        Saturation: [0.08693605963230994, 1.0]
+        Value: [0.472230215196013, 1.0]
+    Avg: 0.8722559668980038
+    Min: 0.7494949494949495
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([5, 4, 6, 4, 3, 4]), 'iterations': array([1, 1, 1, 1, 4, 3])}
+
+Iteration 73:
+    Ranges:
+        Hue: [0.4669905277861512, 0.9461846883785009]
+        Saturation: [0.0750473043410858, 1.0]
+        Value: [0.5125251589877811, 1.0]
+    Avg: 0.8757648053898995
+    Min: 0.7494949494949495
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([5, 4, 6, 4, 3, 4]), 'iterations': array([1, 1, 1, 1, 4, 3])}
+
+Iteration 81:
+    Ranges:
+        Hue: [0.7290718044076282, 0.8131837246941601]
+        Saturation: [0.15555050782281818, 1.0]
+        Value: [0.41683039112645, 1.0]
+    Avg: 0.8986788123603914
+    Min: 0.7386002427324742
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([5, 4, 6, 4, 3, 3]), 'iterations': array([1, 1, 1, 1, 4, 3])}
+

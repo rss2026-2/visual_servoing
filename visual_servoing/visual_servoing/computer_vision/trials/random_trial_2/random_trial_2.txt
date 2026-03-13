@@ -1,0 +1,75 @@
+[ random_trial_2] (11:11:48 PM Mar 12, 2026)
+Total Iterations: 1000
+
+Iteration 0:
+    Ranges:
+        Hue: [0.7562387  0.67554103]
+        Saturation: [0.475748   0.45072166]
+        Value: [0.59020279 0.03418572]
+    Avg: 0.1137072602896756
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 1, 1, 0, 1, 1, 1]), 'sizes': array([6, 5, 3, 7, 6, 3, 3, 4]), 'iterations': array([5, 4, 1, 2, 4, 3, 3, 5])}
+
+Iteration 5:
+    Ranges:
+        Hue: [0.62203456 0.81244087]
+        Saturation: [0.17247745 0.73881872]
+        Value: [0.24049614 0.29774189]
+    Avg: 0.12067178390600583
+    Min: 0.0
+    Filter Specs: {'switch': array([1, 0, 0, 1, 0, 1, 1, 0]), 'sizes': array([5, 4, 2, 7, 5, 5, 2, 6]), 'iterations': array([2, 2, 1, 3, 3, 3, 5, 2])}
+
+Iteration 15:
+    Ranges:
+        Hue: [0.95088702 0.48818737]
+        Saturation: [0.40827302 0.01812222]
+        Value: [0.64853307 0.84300516]
+    Avg: 0.22701833673773136
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 1, 1, 0, 0, 1, 0]), 'sizes': array([7, 7, 4, 4, 2, 5, 5, 5]), 'iterations': array([5, 4, 3, 5, 4, 1, 4, 5])}
+
+Iteration 28:
+    Ranges:
+        Hue: [0.45732488 0.40977429]
+        Saturation: [0.60131938 0.89872737]
+        Value: [0.73163363 0.76860396]
+    Avg: 0.23237734862538284
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 1, 0, 1, 1, 1, 1]), 'sizes': array([2, 3, 3, 2, 5, 2, 6, 2]), 'iterations': array([3, 3, 1, 3, 1, 4, 4, 2])}
+
+Iteration 42:
+    Ranges:
+        Hue: [0.36654639 0.07753641]
+        Saturation: [0.24280331 0.95205785]
+        Value: [0.21105747 0.35706041]
+    Avg: 0.4010413263839651
+    Min: 0.0
+    Filter Specs: {'switch': array([1, 1, 0, 1, 0, 1, 0, 1]), 'sizes': array([5, 6, 5, 6, 7, 7, 5, 3]), 'iterations': array([3, 1, 5, 4, 5, 4, 4, 5])}
+
+Iteration 55:
+    Ranges:
+        Hue: [0.81168904 0.45346696]
+        Saturation: [0.06517415 0.29420324]
+        Value: [0.25550892 0.45360546]
+    Avg: 0.7578851115986717
+    Min: 0.6013779527559056
+    Filter Specs: {'switch': array([0, 0, 0, 1, 0, 1, 1, 0]), 'sizes': array([4, 3, 7, 6, 2, 5, 4, 7]), 'iterations': array([5, 2, 2, 2, 3, 5, 5, 2])}
+
+Iteration 768:
+    Ranges:
+        Hue: [0.77058615 0.62350722]
+        Saturation: [0.38098229 0.27184134]
+        Value: [0.2999297  0.16714668]
+    Avg: 0.7628093991870659
+    Min: 0.5659955257270693
+    Filter Specs: {'switch': array([0, 1, 0, 0, 1, 1, 1, 0]), 'sizes': array([4, 6, 4, 3, 6, 2, 5, 7]), 'iterations': array([1, 4, 1, 4, 1, 3, 3, 5])}
+
+Iteration 776:
+    Ranges:
+        Hue: [0.38938204 0.52811061]
+        Saturation: [0.24547509 0.56633291]
+        Value: [0.27432148 0.88643418]
+    Avg: 0.8578849368648147
+    Min: 0.6456521739130435
+    Filter Specs: {'switch': array([0, 0, 0, 1, 0, 1, 1, 0]), 'sizes': array([5, 4, 7, 3, 5, 4, 4, 7]), 'iterations': array([1, 5, 1, 3, 3, 1, 2, 1])}
+
