@@ -12,9 +12,6 @@ import numpy as np
 #  v
 #  v
 ###############################################################
-
-testing = False
-
 def image_print(img):
     """
     Helper function to print out images, for debugging. Pass them in as a list.
@@ -72,16 +69,34 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None):
             (x1, y1) is the top left of the bbox and (x2, y2) is the bottom right of the bbox
     """
     ########## YOUR CODE STARTS HERE ##########
-    if distances is None:
-        distances = [0.40395939, 0.21454798, 0.60708237] #tuned parameters
 
+    ### Trial Data ###
+    """
+        Ranges:
+            Hue: [0.45024609812492306, 0.7596772255926134]
+            Saturation: [0.10257160837294846, 1.0]
+            Value: [0.5581053400216537, 1.0]
+        Avg: 0.8951160953136833
+        Min: 0.7709090909090909
+        Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([6, 4, 5, 4, 4, 4]), 'iterations': array([2, 1, 1, 2, 3, 2])}
+    """
+
+    ### Tuned Parameters ###
+    if distances is None:
+        distances = [
+            [0.45024609812492306, 0.7596772255926134], # hue range
+            [0.10257160837294846, 1.0], # saturation range
+            [0.5581053400216537, 1.0] # value range
+        ]
+    
     if filter_specs is None:
         filter_specs = {
-            "switch": [1,1,0,0,0,0],
-            "sizes": [5,5,0,0,0,0],
-            "iterations": [1,2,0,0,0,0]
+            "switch": [0, 1], # erosion: off, dilation: on
+            "sizes" : [0, 4], # erosion: box_size 0, dilation: box_size 4
+            "iterations": [0, 1] # erosion: iterations 0, dilation: iterations 1
         }
 
+    ### Program ###
     avg_template_hsv = get_hsv_from_template(template)
     hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
 
@@ -97,21 +112,13 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None):
     contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     box_max = 0
-    bounds_max = None
+    bounding_box = None
     for contour in contours:
         x, y, w, h = cv2.boundingRect(contour)
 
-        if testing:
-            cv2.rectangle(img, (x,y), (x+w, y+h), (255,0,0), 1)
-        if w * h > box_max:
-            bounds_max = ((x,y), (x+w, y+h))
+        if w * h > box_max: # choose the biggest contour
+            bounding_box = ((x,y), (x+w, y+h))
             box_max = w * h
-
-    if testing:
-        cv2.rectangle(img, bounds_max[0], bounds_max[1], (0, 0, 255), 2)
-        image_print(img)
-
-    bounding_box = bounds_max
 
     ########### YOUR CODE ENDS HERE ########### 
     # Return bounding box
@@ -174,38 +181,3 @@ def get_hsv_range_by_distance(hsv, distances):
     ])
     
     return {"lower": lower_bound, "upper": upper_bound}
-
-# def get_hsv_range_by_distance(hsv, distances):
-#     """
-#     Constructs a range of hsv colors based on the distances of the hue, saturation, and value from an average hsv value
-
-#     Input:
-#         hsv: The average hsv value,
-#         distances: A 1x3 array with distances in between 0 and 1 for the hue, saturation, and value
-    
-#     Returns:
-#         A dictionary with keys {"lower", "upper"} corresponding to the lowest and highest hsv value within the range
-#     """
-#     hue_dist, sat_dist, val_dist = distances
-#     hue_max = 179
-#     sat_max = 255
-#     val_max = 255
-
-#     hue, sat, val = hsv
-#     lower_bound = np.array([
-#         max(0, hue - hue_dist*hue_max), 
-#         max(0, sat - sat_dist*sat_max), 
-#         max(0, val - val_dist*val_max)
-#     ])
-#     upper_bound = np.array([
-#         min(hue_max, hue + hue_dist*hue_max), 
-#         min(sat_max, sat + sat_dist*sat_max), 
-#         min(val_max, val + val_dist*val_max)
-#     ])
-
-#     return {"lower": lower_bound, "upper": upper_bound}
-
-if testing:
-    cone_image = get_cone_image(17)
-    test_range = [0.40395939, 0.21454798, 0.60708237]
-    cd_color_segmentation(cone_image, cv2.imread("./visual_servoing/computer_vision/test_images_cone/cone_template.png"), distances = test_range)
