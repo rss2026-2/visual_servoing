@@ -50,13 +50,14 @@ class ParkingController(Node):
         self.drive_cmd = None
 
         timer_rate = 20
-        self.create_timer(1/20, self.timer_callback)
+        self.create_timer(1/timer_rate, self.timer_callback)
 
         self.get_logger().info("Parking Controller Initialized")
 
     def timer_callback(self):
-        self.drive_pub.publish(self.drive_cmd)
-        self.error_publisher()
+        if self.drive_cmd is not None:
+            self.drive_pub.publish(self.drive_cmd)
+            self.error_publisher()
 
     def relative_cone_callback(self, msg):
         self.relative_x = msg.x_pos
