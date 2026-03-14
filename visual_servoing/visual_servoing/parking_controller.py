@@ -47,7 +47,16 @@ class ParkingController(Node):
         self.EPSILON = self.get_parameter('error_epsilon').get_parameter_value().double_value
         self.STEERING_ANGLE_THRESH = 1.2 # initially working with it at 0.9 but it was reversing a lot
 
+        self.drive_cmd = None
+
+        timer_rate = 20
+        self.create_timer(1/20, self.timer_callback)
+
         self.get_logger().info("Parking Controller Initialized")
+
+    def timer_callback(self):
+        self.drive_pub.publish(self.drive_cmd)
+        self.error_publisher()
 
     def relative_cone_callback(self, msg):
         self.relative_x = msg.x_pos
@@ -99,8 +108,7 @@ class ParkingController(Node):
         drive_cmd.drive = pure_persuit_drive_cmd
         #################################
 
-        self.drive_pub.publish(drive_cmd)
-        self.error_publisher()
+        self.drive_cmd = drive_cmd
 
     def error_publisher(self):
         """
