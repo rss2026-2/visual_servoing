@@ -31,8 +31,8 @@ class ParkingController(Node):
 
         self.parking_distance_min = 0.45 # meters; try playing with this number! it should be 1.5 - 2 feet away (0.45 - 0.6 m)
         self.parking_distance_max = 0.6
-        self.relative_x = 0
-        self.relative_y = 0
+        self.relative_x = 0.0
+        self.relative_y = 0.0
 
         # added
         self.declare_parameter("car_length", 0.325)
