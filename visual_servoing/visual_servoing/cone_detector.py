@@ -56,7 +56,20 @@ class ConeDetector(Node):
 
         debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
         self.debug_pub.publish(debug_msg)
+        
+        bottom_center_px = get_bottom_center_of_bounds(bbox)
 
+        cone_msg = ConeLocationPixel()
+        cone_msg.u, cone_msg.v = bottom_center_px
+        
+        self.cone_pub.publish(cone_msg)
+
+def get_bottom_center_of_bounds(bounding_box):
+    top_left_px, bottom_right_px = bounding_box
+    top_left_x, top_left_y = top_left_px
+    bottom_right_x, bottom_right_y = bottom_right_px
+
+    return ( (top_left_x + bottom_right_x) / 2, bottom_right_y )
 
 def main(args=None):
     rclpy.init(args=args)
