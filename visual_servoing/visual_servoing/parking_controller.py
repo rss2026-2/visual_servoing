@@ -134,8 +134,8 @@ class ParkingController(Node):
         # 2. Goal: Find the point parking_distance in front of the cone
         phi = np.arctan2(cone_y, cone_x) # Angle from car to cone
         p1 = np.array([
-            cone_x - self.parking_distance * np.cos(phi),
-            cone_y - self.parking_distance * np.sin(phi)
+            cone_x - self.parking_distance_min * np.cos(phi),
+            cone_y - self.parking_distance_min * np.sin(phi)
         ])
 
         # 3. Tangents: Direction car should be moving at start and end
