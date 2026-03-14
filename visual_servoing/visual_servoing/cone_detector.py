@@ -85,7 +85,7 @@ def get_bottom_center_of_bounds(bounding_box):
     top_left_x, _ = top_left_px
     bottom_right_x, bottom_right_y = bottom_right_px
 
-    return ( (top_left_x + bottom_right_x) / 2, bottom_right_y )
+    return ( float((top_left_x + bottom_right_x) / 2), float(bottom_right_y) )
 
 def main(args=None):
     rclpy.init(args=args)
