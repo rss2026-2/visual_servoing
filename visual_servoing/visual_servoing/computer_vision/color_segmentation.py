@@ -73,27 +73,28 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None):
     ### Trial Data ###
     """
         Ranges:
-            Hue: [0.45024609812492306, 0.7596772255926134]
-            Saturation: [0.10257160837294846, 1.0]
-            Value: [0.5581053400216537, 1.0]
-        Avg: 0.8951160953136833
-        Min: 0.7709090909090909
-        Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([6, 4, 5, 4, 4, 4]), 'iterations': array([2, 1, 1, 2, 3, 2])}
+            Hue: [0.22555346595529566, 0.37443759630528706]
+            Saturation: [0.09102723799465517, 1.0]
+            Value: [0.48860718137548237, 1.0]
+        Avg: 0.8722486753384867
+        Min: 0.8250783699059561
+        Target: 0.6314762637129322
+        Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([7, 5, 7, 2, 4, 7]), 'iterations': array([1, 2, 2, 3, 2, 1])}
     """
 
     ### Tuned Parameters ###
     if distances is None:
         distances = [
-            [0.45024609812492306, 0.7596772255926134], # hue range
-            [0.10257160837294846, 1.0], # saturation range
-            [0.5581053400216537, 1.0] # value range
+            [0.22555346595529566, 0.37443759630528706], # hue range
+            [0.09102723799465517, 1.0], # saturation range
+            [0.48860718137548237, 1.0] # value range
         ]
     
     if filter_specs is None:
         filter_specs = {
             "switch": [0, 1], # erosion: off, dilation: on
-            "sizes" : [0, 4], # erosion: box_size 0, dilation: box_size 4
-            "iterations": [0, 1] # erosion: iterations 0, dilation: iterations 1
+            "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
+            "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
         }
 
     ### Program ###
