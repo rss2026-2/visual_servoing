@@ -1,0 +1,63 @@
+[ bayesian_platypus_trial_3] (11:05:25 PM Mar 13, 2026)
+Total Iterations: 200
+
+Iteration 1:
+    Ranges:
+        Hue: [0.3436546378413775, 0.5113108011161513]
+        Saturation: [0.796682313541547, 1.0]
+        Value: [0.1758486425009237, 1.0]
+    Avg: 0.11513685854525302
+    Min: 0.0
+    Target: 0.05756842927262651
+    Filter Specs: {'switch': array([1, 1, 1, 1, 1, 0]), 'sizes': array([2, 3, 2, 7, 4, 2]), 'iterations': array([3, 3, 3, 1, 2, 1])}
+
+Iteration 3:
+    Ranges:
+        Hue: [0.15706875793023978, 0.5464110594105064]
+        Saturation: [0.23219903188847923, 1.0]
+        Value: [0.2535914603668519, 1.0]
+    Avg: 0.5995942277078127
+    Min: 0.2234337637494022
+    Target: 0.4115139957286074
+    Filter Specs: {'switch': array([1, 0, 0, 1, 1, 0]), 'sizes': array([4, 6, 5, 3, 2, 5]), 'iterations': array([1, 1, 3, 1, 1, 1])}
+
+Iteration 14:
+    Ranges:
+        Hue: [0.4383742871509301, 0.6859231716684991]
+        Saturation: [0.5502025716470931, 1.0]
+        Value: [0.11273610302102521, 1.0]
+    Avg: 0.7274995806396245
+    Min: 0.40075436115040075
+    Target: 0.5641269708950126
+    Filter Specs: {'switch': array([0, 1, 0, 0, 1, 1]), 'sizes': array([2, 7, 6, 7, 3, 5]), 'iterations': array([2, 1, 2, 1, 1, 1])}
+
+Iteration 15:
+    Ranges:
+        Hue: [0.7554391060991488, 0.862479309667612]
+        Saturation: [0.05672296248722497, 1.0]
+        Value: [0.5639362187547606, 1.0]
+    Avg: 0.7588414825600766
+    Min: 0.4160887656033287
+    Target: 0.5874651240817026
+    Filter Specs: {'switch': array([1, 1, 0, 0, 0, 0]), 'sizes': array([2, 4, 5, 3, 6, 2]), 'iterations': array([3, 3, 3, 3, 3, 3])}
+
+Iteration 28:
+    Ranges:
+        Hue: [0.7260528162498989, 0.6281490825201107]
+        Saturation: [0.1316190810566894, 1.0]
+        Value: [0.6245751920933899, 1.0]
+    Avg: 0.8464536211305436
+    Min: 0.7394957983193278
+    Target: 0.7929747097249357
+    Filter Specs: {'switch': array([1, 1, 1, 0, 0, 1]), 'sizes': array([3, 2, 5, 2, 6, 5]), 'iterations': array([1, 3, 1, 1, 3, 2])}
+
+Iteration 35:
+    Ranges:
+        Hue: [0.38506976837856866, 0.8976500794232893]
+        Saturation: [0.3036550489103532, 1.0]
+        Value: [0.29374769991003824, 1.0]
+    Avg: 0.8802538319396896
+    Min: 0.7199496538703587
+    Target: 0.8001017429050241
+    Filter Specs: {'switch': array([0, 0, 0, 1, 0, 0]), 'sizes': array([2, 7, 7, 7, 7, 7]), 'iterations': array([2, 1, 1, 1, 3, 2])}
+

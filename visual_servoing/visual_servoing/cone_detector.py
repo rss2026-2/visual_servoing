@@ -12,7 +12,7 @@ from geometry_msgs.msg import Point #geometry_msgs not in CMake file
 from vs_msgs.msg import ConeLocationPixel
 
 # import your color segmentation algorithm; call this function in ros_image_callback!
-from visual_servoing.computer_vision.color_segmentation import cd_color_segmentation
+from computer_vision.color_segmentation import cd_color_segmentation
 
 
 class ConeDetector(Node):
@@ -25,7 +25,15 @@ class ConeDetector(Node):
     def __init__(self):
         super().__init__("cone_detector")
         # toggle line follower vs cone parker
-        self.LineFollower = False
+        self.declare_parameter("detection_mode", "cone")
+        self.LineFollower = False if self.get_parameter("detection_mode").get_parameter_value().string_value == "cone" else True
+
+        # set line follower image crop parameters
+        self.declare_parameter("y_min", 0.0)
+        self.declare_parameter("y_max", 1.0)
+        
+        self.y_min = self.get_parameter("y_min").get_parameter_value().double_value
+        self.y_max = self.get_parameter("y_max").get_parameter_value().double_value
 
         # Subscribe to ZED camera RGB frames
         self.cone_pub = self.create_publisher(ConeLocationPixel, "/relative_cone_px", 10)
@@ -50,10 +58,33 @@ class ConeDetector(Node):
         #################################
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
+        cone_template = cv2.imread("/root/racecar_ws/src/visual_servoing/visual_servoing/visual_servoing/computer_vision/test_images_cone/cone_template.png")
+
+        # crop image
+        image_height, _ = image.shape
+        image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
+        
+        image = image[image_y_min:image_y_max,:]
+
+        bbox = cd_color_segmentation(image, cone_template)
+        cv2.rectangle(image, bbox[0], bbox[1], (255,0,0), 2)
 
         debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
         self.debug_pub.publish(debug_msg)
+        
+        bottom_center_px = get_bottom_center_of_bounds(bbox)
 
+        cone_msg = ConeLocationPixel()
+        cone_msg.u, cone_msg.v = bottom_center_px
+        
+        self.cone_pub.publish(cone_msg)
+
+def get_bottom_center_of_bounds(bounding_box):
+    top_left_px, bottom_right_px = bounding_box
+    top_left_x, _ = top_left_px
+    bottom_right_x, bottom_right_y = bottom_right_px
+
+    return ( (top_left_x + bottom_right_x) / 2, bottom_right_y )
 
 def main(args=None):
     rclpy.init(args=args)

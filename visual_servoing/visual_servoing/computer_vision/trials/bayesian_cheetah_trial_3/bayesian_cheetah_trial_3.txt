@@ -1,0 +1,13 @@
+[ bayesian_cheetah_trial_3] (11:17:35 PM Mar 13, 2026)
+Total Iterations: 200
+
+Iteration 12:
+    Ranges:
+        Hue: [0.6965787258987979, 0.07242660179371552]
+        Saturation: [0.03433656160683385, 1.0]
+        Value: [0.4715489408013992, 1.0]
+    Avg: 0.8642528094338727
+    Min: 0.7340153452685422
+    Target: 0.43824979650022533
+    Filter Specs: {'switch': array([0, 1, 0, 1, 0, 0]), 'sizes': array([2, 6, 7, 4, 6, 6]), 'iterations': array([1, 1, 2, 1, 3, 2])}
+

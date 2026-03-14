@@ -1,0 +1,33 @@
+[ bayesian_platypus_trial_1] (11:00:14 PM Mar 13, 2026)
+Total Iterations: 200
+
+Iteration 1:
+    Ranges:
+        Hue: [0.9595498447822085, 0.12397776483042422]
+        Saturation: [0.36970125451162716, 1.0]
+        Value: [0.3622301081091205, 1.0]
+    Avg: 0.43528837346215504
+    Min: 0.0
+    Target: 0.21764418673107752
+    Filter Specs: {'switch': array([1, 1, 0, 1, 1, 0]), 'sizes': array([2, 2, 2, 7, 7, 2]), 'iterations': array([1, 3, 1, 1, 3, 3])}
+
+Iteration 3:
+    Ranges:
+        Hue: [0.4356348725051639, 0.24883117576100697]
+        Saturation: [0.07163853789898036, 1.0]
+        Value: [0.6983446296090596, 1.0]
+    Avg: 0.7298640735916153
+    Min: 0.0
+    Target: 0.36493203679580766
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([7, 5, 7, 2, 4, 6]), 'iterations': array([1, 2, 2, 3, 2, 2])}
+
+Iteration 5:
+    Ranges:
+        Hue: [0.3071257139455529, 0.329985472476136]
+        Saturation: [0.048173230002886515, 1.0]
+        Value: [0.5432005606664869, 1.0]
+    Avg: 0.8673970126734503
+    Min: 0.7930174563591023
+    Target: 0.8302072345162763
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([7, 5, 7, 2, 5, 6]), 'iterations': array([1, 2, 2, 4, 2, 2])}
+

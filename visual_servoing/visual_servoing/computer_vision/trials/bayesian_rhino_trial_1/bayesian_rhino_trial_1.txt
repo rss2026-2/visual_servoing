@@ -1,0 +1,36 @@
+[ bayesian_rhino_trial_1] (01:53:17 PM Mar 14, 2026)
+Total Iterations: 200
+
+Iteration 6:
+    Ranges:
+        Hue: [0.05218840128701874, 0.7936775661072372]
+        Saturation: [0.1293793113312326, 1.0]
+        Value: [0.3544896625505838, 1.0]
+    Avg: 0.8662032373458463
+    Min: 0.6172545010507184
+    Target: 0.24278124038827614
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([4, 5, 2, 2, 4, 6]), 'iterations': array([1, 2, 2, 1, 1, 3])}
+    Params: {'hue_low': np.float64(0.05218840128701874), 'hue_high': np.float64(0.7936775661072372), 'sat_low': np.float64(0.1293793113312326), 'sat_high': np.float64(1.0), 'val_low': np.float64(0.3544896625505838), 'val_high': np.float64(1.0), 'switch_1': np.float64(0.7351387656884896), 'size_1': np.float64(4.330535785764271), 'iter_1': np.float64(1.2072482214384561), 'switch_2': np.float64(1.2372686534310189), 'size_2': np.float64(5.219939097405314), 'iter_2': np.float64(2.1842988449586502), 'switch_3': np.float64(0.6440033905176302), 'size_3': np.float64(2.89216370031669), 'iter_3': np.float64(2.317880419028156), 'switch_4': np.float64(0.53610087681609), 'size_4': np.float64(2.195296255109734), 'iter_4': np.float64(1.5977989808567996), 'switch_5': np.float64(0.5801518447113786), 'size_5': np.float64(4.429660838071184), 'iter_5': np.float64(1.5779803707166744), 'switch_6': np.float64(0.7786901351820199), 'size_6': np.float64(6.77134131097692), 'iter_6': np.float64(3.423681648000356)}
+
+Iteration 14:
+    Ranges:
+        Hue: [0.5372308936369092, 0.29494593112078993]
+        Saturation: [0.41413803440888897, 1.0]
+        Value: [0.22098131887675043, 1.0]
+    Avg: 0.845293257785322
+    Min: 0.6809909858835534
+    Target: 0.3577999553851913
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([7, 5, 6, 4, 7, 5]), 'iterations': array([1, 2, 2, 1, 1, 2])}
+    Params: {'hue_low': np.float64(0.5372308936369092), 'hue_high': np.float64(0.29494593112078993), 'sat_low': np.float64(0.41413803440888897), 'sat_high': np.float64(1.0), 'val_low': np.float64(0.22098131887675043), 'val_high': np.float64(1.0), 'switch_1': np.float64(0.6980159081542762), 'size_1': np.float64(7.982311449763165), 'iter_1': np.float64(1.9792826197042763), 'switch_2': np.float64(1.9172430192792675), 'size_2': np.float64(5.0277231607088835), 'iter_2': np.float64(2.832520945588554), 'switch_3': np.float64(0.9274196074457525), 'size_3': np.float64(6.10427895662716), 'iter_3': np.float64(2.4068025241993967), 'switch_4': np.float64(0.3866345881559869), 'size_4': np.float64(4.113810558914208), 'iter_4': np.float64(1.5783955440338702), 'switch_5': np.float64(0.30172322146760144), 'size_5': np.float64(7.428853964497061), 'iter_5': np.float64(1.571692925970635), 'switch_6': np.float64(0.8890013650157419), 'size_6': np.float64(5.332648742119855), 'iter_6': np.float64(2.698059566397686)}
+
+Iteration 51:
+    Ranges:
+        Hue: [0.5798624644780749, 0.23056929313555763]
+        Saturation: [0.08310294126205087, 1.0]
+        Value: [0.5230591588254632, 1.0]
+    Avg: 0.8745358282940142
+    Min: 0.8103448275862069
+    Target: 0.5890808980626983
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([5, 5, 6, 3, 6, 4]), 'iterations': array([2, 2, 2, 1, 2, 3])}
+    Params: {'hue_low': np.float64(0.5798624644780749), 'hue_high': np.float64(0.23056929313555763), 'sat_low': np.float64(0.08310294126205087), 'sat_high': np.float64(1.0), 'val_low': np.float64(0.5230591588254632), 'val_high': np.float64(1.0), 'switch_1': np.float64(0.5616964887850213), 'size_1': np.float64(5.299582506436533), 'iter_1': np.float64(2.2019754969163223), 'switch_2': np.float64(1.7560756505066286), 'size_2': np.float64(5.824895819403068), 'iter_2': np.float64(2.6236502726325037), 'switch_3': np.float64(0.922183935474226), 'size_3': np.float64(6.498377662182902), 'iter_3': np.float64(2.135340188085605), 'switch_4': np.float64(0.6225081185722565), 'size_4': np.float64(3.670394383634336), 'iter_4': np.float64(1.7820120365645868), 'switch_5': np.float64(0.04710841157290135), 'size_5': np.float64(6.362932908264898), 'iter_5': np.float64(2.157752478698635), 'switch_6': np.float64(0.2965165461323017), 'size_6': np.float64(4.7600390503311125), 'iter_6': np.float64(3.0081727961171287)}
+

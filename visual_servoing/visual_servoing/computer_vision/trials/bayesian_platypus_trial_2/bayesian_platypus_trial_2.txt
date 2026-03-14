@@ -1,0 +1,43 @@
+[ bayesian_platypus_trial_2] (11:04:43 PM Mar 13, 2026)
+Total Iterations: 200
+
+Iteration 1:
+    Ranges:
+        Hue: [0.30028575779081557, 0.7647584275841809]
+        Saturation: [0.3743032734336129, 1.0]
+        Value: [0.7252828929194128, 1.0]
+    Avg: 0.4490059364678075
+    Min: 0.0
+    Target: 0.22450296823390375
+    Filter Specs: {'switch': array([1, 0, 1, 0, 0, 1]), 'sizes': array([2, 7, 2, 7, 7, 2]), 'iterations': array([2, 1, 3, 3, 1, 2])}
+
+Iteration 2:
+    Ranges:
+        Hue: [0.07162576966114187, 0.4119178456001833]
+        Saturation: [0.6424297277043077, 1.0]
+        Value: [0.0916599981121915, 1.0]
+    Avg: 0.5896185734145921
+    Min: 0.0
+    Target: 0.29480928670729606
+    Filter Specs: {'switch': array([0, 0, 0, 1, 0, 1]), 'sizes': array([4, 2, 2, 5, 7, 2]), 'iterations': array([2, 2, 1, 2, 1, 2])}
+
+Iteration 5:
+    Ranges:
+        Hue: [0.10126738649460665, 0.6700330039554158]
+        Saturation: [0.4203977553465633, 1.0]
+        Value: [0.14836497545958915, 1.0]
+    Avg: 0.6913557823510128
+    Min: 0.5140625
+    Target: 0.6027091411755063
+    Filter Specs: {'switch': array([0, 0, 0, 0, 0, 1]), 'sizes': array([5, 6, 4, 4, 3, 7]), 'iterations': array([2, 3, 2, 1, 2, 3])}
+
+Iteration 38:
+    Ranges:
+        Hue: [0.9286058304358196, 0.8450951433128743]
+        Saturation: [0.14986657885379995, 1.0]
+        Value: [0.26729071381550396, 1.0]
+    Avg: 0.8735247522289494
+    Min: 0.6968889896299655
+    Target: 0.7852068709294575
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([4, 5, 3, 7, 6, 6]), 'iterations': array([1, 2, 1, 3, 3, 1])}
+

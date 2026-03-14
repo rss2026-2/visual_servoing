@@ -1,0 +1,93 @@
+[ bayesian_squirrel_trial_2] (10:09:40 PM Mar 13, 2026)
+Total Iterations: 200
+
+Iteration 1:
+    Ranges:
+        Hue: [0.5900514940540175, 0.009741444879123762]
+        Saturation: [0.9838300717094872, 1.0]
+        Value: [0.49643581151358107, 1.0]
+    Avg: 0.7394645797432724
+    Min: 0.0
+    Avg_Min_Mean: 0.3697322898716362
+    Filter Specs: {'switch': array([0, 1, 0, 0, 1, 1]), 'sizes': array([4, 5, 4, 7, 2, 4]), 'iterations': array([3, 1, 3, 1, 1, 1])}
+
+Iteration 43:
+    Ranges:
+        Hue: [0.49670765854890536, 0.02756915144039796]
+        Saturation: [0.9863707439133964, 1.0]
+        Value: [0.4294594277974827, 1.0]
+    Avg: 0.81084543700072
+    Min: 0.0
+    Avg_Min_Mean: 0.40542271850036
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([4, 5, 4, 7, 3, 6]), 'iterations': array([3, 1, 3, 1, 1, 1])}
+
+Iteration 65:
+    Ranges:
+        Hue: [0.5709953861445486, 0.38472993982069814]
+        Saturation: [0.6077831285829806, 1.0]
+        Value: [0.10769854434353504, 1.0]
+    Avg: 0.6630300865724382
+    Min: 0.2967391304347826
+    Avg_Min_Mean: 0.4798846085036104
+    Filter Specs: {'switch': array([0, 1, 0, 1, 1, 1]), 'sizes': array([6, 5, 4, 5, 5, 2]), 'iterations': array([3, 2, 1, 1, 3, 2])}
+
+Iteration 67:
+    Ranges:
+        Hue: [0.5973219094468126, 0.3047186459178215]
+        Saturation: [0.5504271577506874, 1.0]
+        Value: [0.12060912113339035, 1.0]
+    Avg: 0.7072298920931219
+    Min: 0.35054347826086957
+    Avg_Min_Mean: 0.5288866851769958
+    Filter Specs: {'switch': array([0, 1, 0, 1, 1, 1]), 'sizes': array([6, 5, 4, 6, 5, 2]), 'iterations': array([3, 2, 1, 1, 3, 2])}
+
+Iteration 89:
+    Ranges:
+        Hue: [0.566840839380749, 0.3931582061861131]
+        Saturation: [0.5668289094007112, 1.0]
+        Value: [0.15060973280661508, 1.0]
+    Avg: 0.7461894169636725
+    Min: 0.38804347826086955
+    Avg_Min_Mean: 0.567116447612271
+    Filter Specs: {'switch': array([0, 1, 0, 1, 1, 1]), 'sizes': array([6, 5, 4, 5, 5, 2]), 'iterations': array([3, 2, 1, 1, 3, 2])}
+
+Iteration 95:
+    Ranges:
+        Hue: [0.907587096879021, 0.5821359314535642]
+        Saturation: [0.4103604095581092, 1.0]
+        Value: [0.21796320397613833, 1.0]
+    Avg: 0.7949956594398382
+    Min: 0.5648535564853556
+    Avg_Min_Mean: 0.6799246079625969
+    Filter Specs: {'switch': array([1, 1, 0, 1, 1, 0]), 'sizes': array([2, 6, 7, 5, 5, 6]), 'iterations': array([3, 2, 3, 1, 1, 3])}
+
+Iteration 107:
+    Ranges:
+        Hue: [0.857115620083638, 0.6116461900569807]
+        Saturation: [0.44864303126352406, 1.0]
+        Value: [0.263964690889888, 1.0]
+    Avg: 0.7871402229195537
+    Min: 0.5964546402502607
+    Avg_Min_Mean: 0.6917974315849071
+    Filter Specs: {'switch': array([1, 1, 0, 1, 1, 0]), 'sizes': array([2, 6, 7, 4, 5, 6]), 'iterations': array([3, 2, 3, 1, 1, 3])}
+
+Iteration 109:
+    Ranges:
+        Hue: [0.7849820633147919, 0.5973640607206628]
+        Saturation: [0.4782259334262145, 1.0]
+        Value: [0.3158685215185149, 1.0]
+    Avg: 0.8019625675210047
+    Min: 0.6288539848749273
+    Avg_Min_Mean: 0.715408276197966
+    Filter Specs: {'switch': array([1, 1, 0, 1, 1, 0]), 'sizes': array([2, 6, 7, 4, 5, 6]), 'iterations': array([3, 2, 3, 1, 1, 3])}
+
+Iteration 110:
+    Ranges:
+        Hue: [0.8327854450603592, 0.5618331761169316]
+        Saturation: [0.4112284707674438, 1.0]
+        Value: [0.2757876798065586, 1.0]
+    Avg: 0.8298415629829053
+    Min: 0.6672345258375922
+    Avg_Min_Mean: 0.7485380444102487
+    Filter Specs: {'switch': array([1, 1, 0, 1, 1, 0]), 'sizes': array([2, 6, 7, 5, 5, 6]), 'iterations': array([2, 2, 3, 1, 1, 3])}
+

@@ -1,0 +1,57 @@
+[ random_trial_3] (11:12:41 PM Mar 12, 2026)
+Total Iterations: 1000
+
+Iteration 0:
+    Ranges:
+        Hue: [0.61349956 0.99788012]
+        Saturation: [0.28552595 0.37045905]
+        Value: [0.53013903 0.34197351]
+    Avg: 0.03565250735481068
+    Min: 0.0
+    Filter Specs: {'switch': array([1, 1, 1, 0, 0, 1, 1, 0]), 'sizes': array([2, 7, 6, 4, 3, 4, 6, 4]), 'iterations': array([2, 4, 4, 1, 2, 1, 4, 3])}
+
+Iteration 1:
+    Ranges:
+        Hue: [0.82110176 0.26265773]
+        Saturation: [0.23146004 0.19458031]
+        Value: [0.52163831 0.63183481]
+    Avg: 0.16541679426477995
+    Min: 0.0
+    Filter Specs: {'switch': array([0, 1, 0, 1, 0, 1, 1, 1]), 'sizes': array([6, 6, 3, 5, 2, 7, 4, 4]), 'iterations': array([3, 3, 2, 5, 1, 3, 4, 5])}
+
+Iteration 17:
+    Ranges:
+        Hue: [0.17066744 0.28564229]
+        Saturation: [0.18761593 0.54647871]
+        Value: [0.50199686 0.70950338]
+    Avg: 0.32542564053245226
+    Min: 0.0
+    Filter Specs: {'switch': array([1, 1, 1, 1, 1, 1, 0, 0]), 'sizes': array([2, 7, 2, 7, 6, 6, 6, 5]), 'iterations': array([1, 1, 5, 4, 4, 4, 1, 5])}
+
+Iteration 26:
+    Ranges:
+        Hue: [0.58947256 0.32835379]
+        Saturation: [0.29297795 0.22519477]
+        Value: [0.26305741 0.28009039]
+    Avg: 0.7239246430319031
+    Min: 0.2660318015027084
+    Filter Specs: {'switch': array([0, 0, 0, 1, 1, 0, 1, 0]), 'sizes': array([6, 4, 5, 3, 3, 2, 2, 6]), 'iterations': array([2, 3, 3, 4, 2, 4, 4, 2])}
+
+Iteration 70:
+    Ranges:
+        Hue: [0.43353918 0.93313949]
+        Saturation: [0.11798997 0.22015347]
+        Value: [0.24213891 0.64241988]
+    Avg: 0.8175591558394109
+    Min: 0.6854545454545454
+    Filter Specs: {'switch': array([0, 0, 0, 1, 1, 0, 1, 1]), 'sizes': array([7, 2, 4, 5, 5, 4, 2, 6]), 'iterations': array([5, 3, 1, 3, 1, 2, 1, 1])}
+
+Iteration 563:
+    Ranges:
+        Hue: [0.18616738 0.81678945]
+        Saturation: [0.15924772 0.68393043]
+        Value: [0.23992244 0.39483257]
+    Avg: 0.8239830362607009
+    Min: 0.5898123324396782
+    Filter Specs: {'switch': array([0, 1, 0, 0, 1, 0, 0, 0]), 'sizes': array([5, 5, 4, 7, 4, 6, 5, 2]), 'iterations': array([1, 4, 5, 1, 4, 4, 2, 4])}
+
