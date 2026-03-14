@@ -12,6 +12,7 @@ from sensor_msgs.msg import Image
 from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
 from vs_msgs.msg import ConeLocation, ConeLocationPixel
+from geometry_msgs.msg import Point
 
 # The following collection of pixel locations and corresponding relative
 # ground plane locations are used to compute our homography matrix
@@ -21,10 +22,10 @@ from vs_msgs.msg import ConeLocation, ConeLocationPixel
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[-1, -1],
-                   [-1, -1],
-                   [-1, -1],
-                   [-1, -1]]  # dummy points
+PTS_IMAGE_PLANE = [[199, 196], # avg over 5 clicks (199 196, 199 196, 199 195, 200 197, 200 197, 198 195, 199 196 )
+                   [373, 209], # avg over 5 clicks (373 209, 373 209, 374 209, 374 208, 373 209)
+                   [171, 249], # avg over 5 clicks  (171 249, 171 249, 170 250, 170 249, 171 250)
+                   [409, 315]]  # avg over 5 clicks (409 315, 409 315, 407 314, 409 315, 409 315)
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -32,10 +33,10 @@ PTS_IMAGE_PLANE = [[-1, -1],
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[-1, -1],
-                    [-1, -1],
-                    [-1, -1],
-                    [-1, -1]]  # dummy points
+PTS_GROUND_PLANE = [[46.375, 17.25], # avg over 3 measurements
+                    [37.5, -7.75], # avg over 3 measurements
+                    [24, 12.0], # avg over 3 measurements
+                    [13.25, -1.625]]  # avg over 3 measurements
 ######################################################
 
 METERS_PER_INCH = 0.0254
@@ -48,6 +49,8 @@ class HomographyTransformer(Node):
         self.cone_pub = self.create_publisher(ConeLocation, "/relative_cone", 10)
         self.marker_pub = self.create_publisher(Marker, "/cone_marker", 1)
         self.cone_px_sub = self.create_subscription(ConeLocationPixel, "/relative_cone_px", self.cone_detection_callback, 1)
+        # added
+        self.click_px_sub = self.create_subscription(Point, "/zed/zed_node/rgb/image_rect_color_mouse_left", self.click_callback, 1)
 
         if not len(PTS_GROUND_PLANE) == len(PTS_IMAGE_PLANE):
             rclpy.logerr("ERROR: PTS_GROUND_PLANE and PTS_IMAGE_PLANE should be of same length")
@@ -81,6 +84,17 @@ class HomographyTransformer(Node):
 
         self.cone_pub.publish(relative_xy_msg)
 
+    def click_callback(self, msg):
+        self.get_logger().info("Click detected")
+        u = msg.x
+        v = msg.y
+
+        self.get_logger().info(f'{msg=}')
+        self.get_logger().info(f'{u=}, {v=}')
+
+        x, y = self.transformUvToXy(u, v)
+        self.draw_marker(x, y, "/zed_camera_link")
+
     def transformUvToXy(self, u, v):
         """
         u and v are pixel coordinates.
@@ -100,6 +114,7 @@ class HomographyTransformer(Node):
         homogeneous_xy = xy * scaling_factor
         x = homogeneous_xy[0, 0]
         y = homogeneous_xy[1, 0]
+        self.get_logger().info(f"x-value: {x} \n y-value: {y}")
         return x, y
 
     def draw_marker(self, cone_x, cone_y, message_frame):
