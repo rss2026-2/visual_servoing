@@ -29,7 +29,8 @@ class ParkingController(Node):
         self.create_subscription(
             ConeLocation, "/relative_cone", self.relative_cone_callback, 1)
 
-        self.parking_distance = .6 # meters; try playing with this number! it should be 1.5 - 2 feet away (0.45 - 0.6 m)
+        self.parking_distance_min = 0.45 # meters; try playing with this number! it should be 1.5 - 2 feet away (0.45 - 0.6 m)
+        self.parking_distance_max = 0.6
         self.relative_x = 0
         self.relative_y = 0
 
@@ -45,7 +46,6 @@ class ParkingController(Node):
         self.LOOKAHEAD = self.get_parameter('lookahead').get_parameter_value().double_value
         self.EPSILON = self.get_parameter('error_epsilon').get_parameter_value().double_value
         self.STEERING_ANGLE_THRESH = 1.2 # initially working with it at 0.9 but it was reversing a lot
-
 
         self.get_logger().info("Parking Controller Initialized")
 
@@ -201,7 +201,7 @@ class ParkingController(Node):
         # Check to see if we are too close
         goal_dist = np.sqrt(self.relative_x**2 + self.relative_y**2)
 
-        if goal_dist < self.parking_distance and self.pointed_at_cone():
+        if goal_dist < self.parking_distance_max and goal_dist > self.parking_distance_min and self.pointed_at_cone():
             # TODO add something here if we are too close but not pointed well...
             drive.speed = 0.0
             drive.steering_angle = 0.0
