@@ -29,7 +29,7 @@ class ParkingController(Node):
         self.create_subscription(
             ConeLocation, "/relative_cone", self.relative_cone_callback, 1)
 
-        self.parking_distance = .75  # meters; try playing with this number!
+        self.parking_distance = .6 # meters; try playing with this number! it should be 1.5 - 2 feet away (0.45 - 0.6 m)
         self.relative_x = 0
         self.relative_y = 0
 
@@ -44,6 +44,7 @@ class ParkingController(Node):
         self.VELOCITY = self.get_parameter('velocity').get_parameter_value().double_value
         self.LOOKAHEAD = self.get_parameter('lookahead').get_parameter_value().double_value
         self.EPSILON = self.get_parameter('error_epsilon').get_parameter_value().double_value
+        self.STEERING_ANGLE_THRESH = 1.2 # initially working with it at 0.9 but it was reversing a lot
 
 
         self.get_logger().info("Parking Controller Initialized")
@@ -210,7 +211,7 @@ class ParkingController(Node):
         new_steering_angle = self.compute_feedback_angle(target_point)
 
         # If the turn we have to make is too tight
-        if abs(new_steering_angle) > self.MAX_STEERING_ANGLE * 0.9:
+        if abs(new_steering_angle) > self.MAX_STEERING_ANGLE * self.STEERING_ANGLE_THRESH:
             drive.speed = -0.5
             reverse_angle = -0.5 * new_steering_angle
             drive.steering_angle = float(np.clip(reverse_angle,
