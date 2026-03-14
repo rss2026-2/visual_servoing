@@ -1,0 +1,13 @@
+[ bayesian_worm_trial_3] (10:01:51 PM Mar 13, 2026)
+Total Iterations: 100
+
+Iteration 1:
+    Ranges:
+        Hue: [0.8162247948842286, 0.8543186132643441]
+        Saturation: [0.3141961498393804, 1.0]
+        Value: [0.19276370329792492, 1.0]
+    Avg: 0.7899252769351753
+    Min: 0.6626944720291295
+    Avg_Min_Mean: 0.7263098744821523
+    Filter Specs: {'switch': array([0, 0, 0, 0, 0, 1]), 'sizes': array([7, 2, 7, 3, 4, 5]), 'iterations': array([4, 3, 2, 1, 5, 3])}
+

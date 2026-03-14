@@ -1,0 +1,23 @@
+[ bayesian_cheetah_trial_2] (11:16:59 PM Mar 13, 2026)
+Total Iterations: 200
+
+Iteration 10:
+    Ranges:
+        Hue: [0.5830163127681725, 0.8577028826565796]
+        Saturation: [0.19250811085284514, 1.0]
+        Value: [0.15372129375480437, 1.0]
+    Avg: 0.7817202551496976
+    Min: 0.6326129666011788
+    Target: 0.3210224816328473
+    Filter Specs: {'switch': array([0, 1, 0, 0, 1, 1]), 'sizes': array([5, 7, 7, 5, 6, 5]), 'iterations': array([3, 1, 3, 1, 1, 3])}
+
+Iteration 57:
+    Ranges:
+        Hue: [0.4661453543446066, 0.5766550890678114]
+        Saturation: [0.19434129451413817, 1.0]
+        Value: [0.37948923019576697, 1.0]
+    Avg: 0.8961326106786236
+    Min: 0.7399528545966768
+    Target: 0.422846887414112
+    Filter Specs: {'switch': array([0, 0, 0, 0, 0, 1]), 'sizes': array([4, 2, 2, 4, 2, 6]), 'iterations': array([2, 2, 1, 3, 1, 1])}
+

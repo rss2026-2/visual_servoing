@@ -1,0 +1,14 @@
+[ bayesian_calypso_trial_11] (11:33:20 PM Mar 13, 2026)
+Total Iterations: 200
+
+Iteration 10:
+    Ranges:
+        Hue: [0.3710124481625384, 0.85572670878653]
+        Saturation: [0.16070979948187014, 1.0]
+        Value: [0.5044105382585387, 1.0]
+    Avg: 0.859465912071481
+    Min: 0.7632508833922261
+    Target: 0.5011729230892539
+    Filter Specs: {'switch': array([0, 0, 1, 0, 0, 1]), 'sizes': array([3, 4, 5, 4, 3, 6]), 'iterations': array([1, 1, 1, 3, 2, 2])}
+    Params: {'hue_low': np.float64(0.3710124481625384), 'hue_high': np.float64(0.85572670878653), 'sat_low': np.float64(0.16070979948187014), 'sat_high': np.float64(1.0), 'val_low': np.float64(0.5044105382585387), 'val_high': np.float64(1.0), 'switch_1': np.float64(0.6878899044438067), 'size_1': np.float64(3.1557688101878387), 'iter_1': np.float64(1.7523539816218099), 'switch_2': np.float64(0.8074617028694067), 'size_2': np.float64(4.683662836758623), 'iter_2': np.float64(1.0001663065592834), 'switch_3': np.float64(1.8559950161325247), 'size_3': np.float64(5.44491466418552), 'iter_3': np.float64(1.3736230813859582), 'switch_4': np.float64(0.8406291177142281), 'size_4': np.float64(4.074586293524101), 'iter_4': np.float64(3.3373953916777275), 'switch_5': np.float64(0.7561410951969176), 'size_5': np.float64(3.7770216328001185), 'iter_5': np.float64(2.048240755377725), 'switch_6': np.float64(1.5872263464973193), 'size_6': np.float64(6.587096954372839), 'iter_6': np.float64(2.4899439970470763)}
+

@@ -1,0 +1,43 @@
+[ bayesian_cheetah_trial_1] (11:16:16 PM Mar 13, 2026)
+Total Iterations: 200
+
+Iteration 2:
+    Ranges:
+        Hue: [0.1908466000802289, 0.6843264891906259]
+        Saturation: [0.11522946145320312, 1.0]
+        Value: [0.22629763370290668, 1.0]
+    Avg: 0.8187274623402665
+    Min: 0.6452565316695449
+    Target: 0.31549358083658263
+    Filter Specs: {'switch': array([0, 0, 0, 1, 0, 0]), 'sizes': array([5, 5, 5, 5, 3, 7]), 'iterations': array([2, 3, 2, 3, 1, 3])}
+
+Iteration 125:
+    Ranges:
+        Hue: [0.7023046729750175, 0.9547616157120474]
+        Saturation: [0.33650300071042016, 1.0]
+        Value: [0.2011671083209151, 1.0]
+    Avg: 0.7956191428694295
+    Min: 0.6673427991886409
+    Target: 0.3733241008160117
+    Filter Specs: {'switch': array([0, 0, 0, 1, 0, 0]), 'sizes': array([4, 7, 5, 7, 7, 6]), 'iterations': array([3, 1, 3, 2, 1, 3])}
+
+Iteration 126:
+    Ranges:
+        Hue: [0.7366783987532594, 0.20590126638769735]
+        Saturation: [0.051768131366758396, 1.0]
+        Value: [0.48545334497944914, 1.0]
+    Avg: 0.8816835193887915
+    Min: 0.7499051233396584
+    Target: 0.4527813793784975
+    Filter Specs: {'switch': array([0, 0, 0, 1, 0, 0]), 'sizes': array([3, 2, 6, 5, 2, 4]), 'iterations': array([1, 1, 2, 1, 1, 3])}
+
+Iteration 161:
+    Ranges:
+        Hue: [0.25752530199953827, 0.3399227851433466]
+        Saturation: [0.060658822979675786, 1.0]
+        Value: [0.5601242983741156, 1.0]
+    Avg: 0.8675849322842151
+    Min: 0.8049476688867745
+    Target: 0.585991924355245
+    Filter Specs: {'switch': array([0, 1, 0, 0, 0, 0]), 'sizes': array([7, 5, 7, 2, 4, 6]), 'iterations': array([1, 2, 2, 4, 2, 2])}
+
