@@ -2,7 +2,6 @@
 
   <!-- Launch the parking controller on the real robot. Launches safety controller, controller node, cone detection node, and the homography transformer -->
   <!-- Edit this to launch your safety controller you implemented in Lab 3! -->
-  <param from="$(find visual_servoing)/visual_servoing/params_line.yaml" />
 
   <node pkg="wall_follower_rover" name="safety_controller" exec="safety_controller" output="screen">
   </node>
@@ -12,6 +11,9 @@
   </node>
 
   <node pkg="visual_servoing" name="cone_detector" exec="cone_detector" output="screen">
+    <param name="y_min" value="0.16" />
+    <param name="y_max" value="0.45" />
+    <param name="mode" value="line" />
   </node>
 
   <node pkg="visual_servoing" name="homography_transformer" exec="homography_transformer" output="screen">
