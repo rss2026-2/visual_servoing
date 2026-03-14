@@ -39,7 +39,7 @@ class ParkingController(Node):
         self.declare_parameter("max_steering_angle", 0.34)
         self.declare_parameter("velocity", 1.0)
         self.declare_parameter("lookahead", 0.8)
-        self.declare_parameter("error_epsilon", 05)
+        self.declare_parameter("error_epsilon", 0.05)
         self.CAR_LENGTH = self.get_parameter('car_length').get_parameter_value().double_value
         self.MAX_STEERING_ANGLE = self.get_parameter('max_steering_angle').get_parameter_value().double_value
         self.VELOCITY = self.get_parameter('velocity').get_parameter_value().double_value
@@ -201,7 +201,7 @@ class ParkingController(Node):
         # Check to see if we are too close
         goal_dist = np.sqrt(self.relative_x**2 + self.relative_y**2)
 
-        # if we are in the stopping range and pointed at the cone, it's okay 
+        # if we are in the stopping range and pointed at the cone, it's okay
         if goal_dist < self.parking_distance_max and goal_dist > self.parking_distance_min and self.pointed_at_cone():
             # TODO add something here if we are too close but not pointed well...
             drive.speed = 0.0
