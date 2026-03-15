@@ -19,7 +19,7 @@ def run_test(hsv_range = None, filter_specs = None, margins = None):
     cone_csv_path = "./test_images_cone/test_images_cone.csv"
     cone_template_path = './test_images_cone/cone_template.png'
 
-    scores = test_algorithm(cd_color_segmentation, cone_csv_path, cone_template_path, range_param = hsv_range, filter_param = filter_specs, margin_param = margins)
+    scores = test_algorithm(cd_color_segmentation, cone_csv_path, cone_template_path, trials = True, range_param = hsv_range, filter_param = filter_specs, margin_param = margins)
 
     if scores:
         return {
