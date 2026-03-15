@@ -77,7 +77,9 @@ class ConeDetector(Node):
         if bbox is not None:
             cv2.line(image, pt1 = (0, int(self.y_min) * image_height), pt2 = (image_width-1, int(self.y_min) * image_height), color = (0, 0, 255), thickness = 2)
             cv2.line(image, pt1 = (0, int(self.y_max) * image_height), pt2 = (image_width-1, int(self.y_max) * image_height), color = (0, 0, 255), thickness = 2)
-            cv2.rectangle(image, bbox[0], bbox[1] + int(self.y_min * image_height), (255,0,0), 2)
+
+            bbox_uncropped = (bbox[0][0], bbox[0][1] + int(self.y_min * image_height)), (bbox[1][0], bbox[1][1] +  int(self.y_min * image_height))
+            cv2.rectangle(image, bbox_uncropped[0], bbox_uncropped[1] + int(self.y_min * image_height), (255,0,0), 2)
 
             debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
             self.debug_pub.publish(debug_msg)
