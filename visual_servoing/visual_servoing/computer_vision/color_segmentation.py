@@ -111,7 +111,7 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
                 "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
                 "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
             }
-            
+
     """
     28.9, 70, 94
     26.9, 65, 89
@@ -126,7 +126,7 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
         hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
     elif detection_mode == "line":
         hsv_range = get_hsv_range_by_colors(
-            hsv_low = hsv_convert_to_cv2((20, 60, 65)),
+            hsv_low = hsv_convert_to_cv2((20, 30, 65)),
             hsv_high =  hsv_convert_to_cv2((35, 90, 100))
         )
 
