@@ -156,7 +156,7 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
 
         contours_in_roi, _ = cv2.findContours(region_of_interest_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         
-        x,y,w,h = cv2.boundingRect(np.vstack([ctr + [left, top] for ctr in contours_in_roi]))
+        x,y,w,h = cv2.boundingRect(np.vstack([ctr + np.array([[[left, top]]]) for ctr in contours_in_roi]))
         bounding_box = ((x,y), (x+w, y+h))
 
     return bounding_box
