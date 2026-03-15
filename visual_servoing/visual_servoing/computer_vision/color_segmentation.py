@@ -144,24 +144,25 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
  
     contours, _ = cv2.findContours(connected_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    margin = 50
+    # margin = 50
 
     bounding_box = None
     if len(contours) != 0:
-        biggest_ctr = max(contours, key = cv2.contourArea)
-        bx, by, bw, bh = cv2.boundingRect(biggest_ctr)
+        # biggest_ctr = max(contours, key = cv2.contourArea)
+        # bx, by, bw, bh = cv2.boundingRect(biggest_ctr)
 
-        left, right, top, bottom = bx - margin, bx + bw + margin, by - margin, by+bh+margin
-        close_contours = []
+        # left, right, top, bottom = bx - margin, bx + bw + margin, by - margin, by+bh+margin
+        # close_contours = []
 
-        for ctr in contours:
-            cx, cy, cw, ch = cv2.boundingRect(ctr)
+        # for ctr in contours:
+        #     cx, cy, cw, ch = cv2.boundingRect(ctr)
 
-            #check if the contour overlaps with the biggest contour
-            if not (cx > right or cx+cw < left or cy > bottom or cy+ch < top): 
-                close_contours.append(ctr)
+        #     #check if the contour overlaps with the biggest contour
+        #     if not (cx > right or cx+cw < left or cy > bottom or cy+ch < top): 
+        #         close_contours.append(ctr)
         
-        x,y,w,h = cv2.boundingRect(np.vstack(close_contours))
+        # x,y,w,h = cv2.boundingRect(np.vstack(close_contours))
+        x,y,w,h = cv2.boundingRect(np.vstack(contours))
         bounding_box = ((x,y), (x+w, y+h))
 
     return bounding_box
