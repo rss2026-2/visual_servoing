@@ -28,13 +28,13 @@ class ParkingController(Node):
 
         self.create_subscription(
             ConeLocation, "/relative_cone", self.relative_cone_callback, 1)
-        
+
         self.create_subscription(
             Bool, "/proximity_check", self.proximity_check_callback, 1
         )
 
         self.parking_distance_min = 0.45 # meters; try playing with this number! it should be 1.5 - 2 feet away (0.45 - 0.6 m)
-        self.parking_distance_max = 0.6
+        self.parking_distance_max = 0.55
         self.relative_x = 0.0
         self.relative_y = 0.0
 
@@ -63,7 +63,7 @@ class ParkingController(Node):
         if self.drive_cmd is not None:
             self.drive_pub.publish(self.drive_cmd)
             self.error_publisher()
-    
+
     def proximity_check_callback(self, msg):
         self.proximity_check = msg.data
 
