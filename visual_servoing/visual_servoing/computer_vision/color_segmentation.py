@@ -87,7 +87,7 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None):
         distances = [
             [0.22555346595529566, 0.37443759630528706], # hue range
             [0.09102723799465517, 1.0], # saturation range
-            [0.48860718137548237, 1.0] # value range
+            [0.48860718137548237, 0.5] # value range
         ]
     
     if filter_specs is None:
