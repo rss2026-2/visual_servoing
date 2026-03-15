@@ -138,31 +138,25 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
     )
 
     filtered_mask = filter_cascade(color_mask)
-
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 5))
-    connected_mask = cv2.morphologyEx(filtered_mask, cv2.MORPH_CLOSE, kernel)
  
-    contours, _ = cv2.findContours(connected_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    # margin = 50
+    margin = 100
 
     bounding_box = None
     if len(contours) != 0:
-        # biggest_ctr = max(contours, key = cv2.contourArea)
-        # bx, by, bw, bh = cv2.boundingRect(biggest_ctr)
+        biggest_ctr = max(contours, key = cv2.contourArea)
+        bx, by, bw, bh = cv2.boundingRect(biggest_ctr)
 
-        # left, right, top, bottom = bx - margin, bx + bw + margin, by - margin, by+bh+margin
-        # close_contours = []
+        left, right, top, bottom = bx - margin, bx + bw + margin, by - margin, by+bh+margin
 
-        # for ctr in contours:
-        #     cx, cy, cw, ch = cv2.boundingRect(ctr)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 5))
+        region_of_interest_mask = filtered_mask[top:bottom, left:right].copy()
+        region_of_interest_mask = cv2.morphologyEx(region_of_interest_mask, cv2.MORPH_CLOSE, kernel)
 
-        #     #check if the contour overlaps with the biggest contour
-        #     if not (cx > right or cx+cw < left or cy > bottom or cy+ch < top): 
-        #         close_contours.append(ctr)
+        contours_in_roi, _ = cv2.findContours(region_of_interest_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         
-        # x,y,w,h = cv2.boundingRect(np.vstack(close_contours))
-        x,y,w,h = cv2.boundingRect(np.vstack(contours))
+        x,y,w,h = cv2.boundingRect(np.vstack([ctr + [left, top] for ctr in contours_in_roi]))
         bounding_box = ((x,y), (x+w, y+h))
 
     return bounding_box
