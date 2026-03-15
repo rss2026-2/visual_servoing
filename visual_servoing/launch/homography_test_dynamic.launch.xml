@@ -1,0 +1,14 @@
+<launch>
+
+    <node pkg="visual_servoing" name="homography_transformer" exec="homography_transformer" output="screen">
+    </node>
+
+    <node pkg="visual_servoing" name="homography_tester" exec="homography_tester" output="screen">
+        <param from="$(find-pkg-share visual_servoing)/params_hom_test.yaml"/>
+    </node>
+
+    <node pkg="visual_servoing" name="cone_detector" exec="cone_detector" output="screen">
+        <param name="detection_mode" value="cone"/>
+    </node>
+    
+</launch>
