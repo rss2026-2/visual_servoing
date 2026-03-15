@@ -101,12 +101,11 @@ def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, 
                 "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
                 "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
         }
-
     if margins is None:
         if detection_mode == "cone":
             margins = (0, 3)
         elif detection_mode == "line":
-            margins = (300, 600) #(x_margin, y_margin)
+            margins = (100, 200) #(x_margin, y_margin)
     
     ### Program ###
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
