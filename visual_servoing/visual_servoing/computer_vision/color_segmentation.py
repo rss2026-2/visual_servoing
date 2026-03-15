@@ -141,15 +141,19 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
  
     contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    margin = 100
+    y_margin = 150
+    x_margin = 50
+
+
     img_height, img_width, _= img.shape
     bounding_box = None
     if len(contours) != 0:
         biggest_ctr = max(contours, key = cv2.contourArea)
         bx, by, bw, bh = cv2.boundingRect(biggest_ctr)
 
-        left, right, top, bottom = max(bx - margin, 0), min(bx + bw + margin, img_width-1), max(by - margin, 0), min(by+bh+margin, img_height-1)
-
+        left, right = max(bx - x_margin, 0), min(bx + bw + x_margin, img_width-1)
+        top, bottom = max(by - y_margin, 0), min(by+bh+y_margin, img_height-1)
+        
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 5))
         region_of_interest_mask = filtered_mask[top:bottom, left:right].copy()
         
