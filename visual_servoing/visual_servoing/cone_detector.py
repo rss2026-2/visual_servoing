@@ -25,9 +25,6 @@ class ConeDetector(Node):
 
     def __init__(self):
         super().__init__("cone_detector")
-        # toggle line follower vs cone parker
-        self.declare_parameter("detection_mode", "cone")
-        self.DETECTION_MODE = self.get_parameter("detection_mode").get_parameter_value().string_value
         # set line follower image crop parameters
         self.declare_parameter("y_min", 0.0)
         self.declare_parameter("y_max", 1.0)
@@ -65,12 +62,13 @@ class ConeDetector(Node):
         cone_template = cv2.imread("/root/racecar_ws/src/visual_servoing/visual_servoing/visual_servoing/computer_vision/test_images_cone/cone_template.png")
 
         # crop image
-        print(self.DETECTION_MODE)
-        if self.DETECTION_MODE == "line":
-            print()
+        if self.y_min != 0.0 or self.y_max != 1.0:
+            print("I AM CROP")
             image_height = image.shape[0]
             image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
             
+
+
             image = image[image_y_min:image_y_max,:]
 
         image_height = image.shape[0]
