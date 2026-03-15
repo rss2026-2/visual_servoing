@@ -61,22 +61,23 @@ class ConeDetector(Node):
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
         cone_template = cv2.imread("/root/racecar_ws/src/visual_servoing/visual_servoing/visual_servoing/computer_vision/test_images_cone/cone_template.png")
 
+
+
         # crop image
-        if self.y_min != 0.0 or self.y_max != 1.0:
-            print("I AM CROP")
-            image_height = image.shape[0]
-            image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
-            
-
-
-            image = image[image_y_min:image_y_max,:]
-
-        image_height = image.shape[0]
+        print("I AM CROP")
+        image_width, image_height = image.shape[0], image.shape[1]
+        image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
         
-        bbox = cd_color_segmentation(image, cone_template)
+        cropped_image = image[image_y_min:image_y_max,:]
+        cropped_image_height = cropped_image.shape[1]
+        
+        bbox = cd_color_segmentation(cropped_image, cone_template)
+
 
         if bbox is not None:
-            cv2.rectangle(image, bbox[0], bbox[1], (255,0,0), 2)
+            cv2.line(image, pt1 = (0, int(self.y_min) * image_height), pt2 = (image_width-1, int(self.y_min) * image_height), color = (0, 0, 255), thickness = 2)
+            cv2.line(image, pt1 = (0, int(self.y_max) * image_height), pt2 = (image_width-1, int(self.y_max) * image_height), color = (0, 0, 255), thickness = 2)
+            cv2.rectangle(image, bbox[0], bbox[1] + int(self.y_min * image_height), (255,0,0), 2)
 
             debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
             self.debug_pub.publish(debug_msg)
@@ -87,7 +88,7 @@ class ConeDetector(Node):
             cone_msg.u, cone_msg.v = bottom_center_px
 
             proximity_msg = Bool()
-            if cone_msg.v > image_height * (1 - self.prox_threshold):
+            if cone_msg.v > cropped_image_height * (1 - self.prox_threshold):
                 proximity_msg.data = True
             else:
                 proximity_msg.data = False
