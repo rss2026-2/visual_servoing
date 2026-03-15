@@ -26,8 +26,8 @@ class ConeDetector(Node):
     def __init__(self):
         super().__init__("cone_detector")
         # set line follower image crop parameters
-        self.declare_parameter("y_min", 0.54)
-        self.declare_parameter("y_max", 0.638)
+        self.declare_parameter("y_min", 0.0)
+        self.declare_parameter("y_max", 1.0)
         # set proximity check parameters
         self.declare_parameter("prox_threshold", 0.0)
         
@@ -83,7 +83,7 @@ class ConeDetector(Node):
             debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
             self.debug_pub.publish(debug_msg)
             
-            bottom_center_px = get_bottom_center_of_bounds(bbox_uncropped)
+            bottom_center_px = get_bottom_center_of_bounds(bbox)
 
             cone_msg = ConeLocationPixel()
             cone_msg.u, cone_msg.v = bottom_center_px
