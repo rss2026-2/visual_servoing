@@ -97,7 +97,7 @@ def test_algorithm(detection_func, csv_file_path, template_file_path, swap=False
             # Detection bbox
 
 
-            bbox_est = detection_func(img, template, range_param, filter_param)
+            bbox_est = detection_func(img, template)
 
             if not bbox_est: # if a box wasn't detected
                 score = 0
