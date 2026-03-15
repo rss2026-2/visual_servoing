@@ -72,10 +72,10 @@ class ConeDetector(Node):
         bbox = cd_color_segmentation(cropped_image, self.cone_template)
 
         if bbox is not None:
-            cv2.line(image, pt1 = (0, int(self.y_min * image_height)), pt2 = (image_width-1, int(self.y_min * image_height)), color = (0, 0, 255), thickness = 2)
-            cv2.line(image, pt1 = (0, int(self.y_max * image_height)), pt2 = (image_width-1, int(self.y_max * image_height)), color = (0, 0, 255), thickness = 2)
+            cv2.line(image, pt1 = (0, image_y_min), pt2 = (image_width-1, image_y_min), color = (0, 0, 255), thickness = 2)
+            cv2.line(image, pt1 = (0, image_y_max), pt2 = (image_width-1, image_y_max), color = (0, 0, 255), thickness = 2)
 
-            bbox_uncropped = [(bbox[0][0], bbox[0][1] + int(self.y_min * image_height)), (bbox[1][0], bbox[1][1] +  int(self.y_min * image_height))]
+            bbox_uncropped = [(bbox[0][0], bbox[0][1] + image_y_min), (bbox[1][0], bbox[1][1] + image_y_min)]
             cv2.rectangle(image, bbox_uncropped[0], bbox_uncropped[1], (255,0,0), 2)
             
             bottom_center_px = get_bottom_center_of_bounds(bbox)

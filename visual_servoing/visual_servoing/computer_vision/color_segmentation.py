@@ -98,7 +98,8 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None):
         }
 
     ### Program ###
-    avg_template_hsv = get_hsv_from_template(template)
+    # avg_template_hsv = get_hsv_from_template(template)
+    avg_template_hsv = (9, 180, 150)
     hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
 
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
