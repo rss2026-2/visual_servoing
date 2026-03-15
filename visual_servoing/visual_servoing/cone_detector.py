@@ -36,7 +36,7 @@ class ConeDetector(Node):
         
         self.y_min = self.get_parameter("y_min").get_parameter_value().double_value
         self.y_max = self.get_parameter("y_max").get_parameter_value().double_value
-        self.prox_threshold = self.get_parameter("prox_threshold").get_parameter_value().double_vale
+        self.prox_threshold = self.get_parameter("prox_threshold").get_parameter_value().double_value
 
         # Subscribe to ZED camera RGB frames
         self.cone_pub = self.create_publisher(ConeLocationPixel, "/relative_cone_px", 10)
