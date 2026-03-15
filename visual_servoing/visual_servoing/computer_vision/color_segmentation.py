@@ -106,7 +106,7 @@ def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, 
         if detection_mode == "cone":
             margins = (0, 3)
         elif detection_mode == "line":
-            margins = (100, 200) #(x_margin, y_margin)
+            margins = (100, 400) #(x_margin, y_margin)
     
     ### Program ###
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
