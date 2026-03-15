@@ -111,13 +111,24 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
                 "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
                 "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
             }
-
+            
+    """
+    28.9, 70, 94
+    26.9, 65, 89
+    29.1, 87, 71
+    30.5, 77, 96
+    23.1, 65, 100
+    """
+    
     ### Program ###
     if detection_mode == "cone":
         avg_template_hsv = get_hsv_from_template(template)
+        hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
     elif detection_mode == "line":
-        avg_template_hsv = (7, 180, 150)
-    hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
+        hsv_range = get_hsv_range_by_colors(
+            hsv_low = hsv_convert_to_cv2((20, 60, 65)),
+            hsv_high =  hsv_convert_to_cv2((35, 90, 100))
+        )
 
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     color_mask = cv2.inRange(hsv_input_img, hsv_range["lower"], hsv_range["upper"])
@@ -142,7 +153,6 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
     ########### YOUR CODE ENDS HERE ########### 
     # Return bounding box
     return bounding_box
-
 
 def get_cone_image(img_num = None):
     """
@@ -177,6 +187,13 @@ def get_hsv_from_template(template_img):
     avg_hsv = opaque_img.mean(axis=0)
 
     return avg_hsv
+
+def hsv_convert_to_cv2(hsv_input):
+    hue, sat, val = hsv_input
+    return (hue / 2, sat * 2.55, val * 2.55)
+
+def get_hsv_range_by_colors(hsv_low, hsv_high):
+    return {"lower": np.array(hsv_low), "upper": np.array(hsv_high)}
 
 def get_hsv_range_by_distance(hsv, distances):
     hue_dist_below, hue_dist_above = distances[0]
