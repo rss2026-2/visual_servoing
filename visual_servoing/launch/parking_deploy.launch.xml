@@ -10,6 +10,7 @@
   </node>
 
   <node pkg="visual_servoing" name="cone_detector" exec="cone_detector" output="screen">
+    <param name="detection_mode" value="cone" />
   </node>
 
   <node pkg="visual_servoing" name="homography_transformer" exec="homography_transformer" output="screen">

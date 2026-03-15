@@ -58,7 +58,7 @@ def filter_list_from_filter_specs(filter_specs):
     return filter_lis
 
 
-def cd_color_segmentation(img, template, distances = None, filter_specs = None):
+def cd_color_segmentation(img, template, distances = None, filter_specs = None, detection_mode = "cone"):
     """
     Implement the cone detection using color segmentation algorithm
     Input:
@@ -84,11 +84,19 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None):
 
     ### Tuned Parameters ###
     if distances is None:
-        distances = [
-            [1.0, 0.37443759630528706], # hue range
-            [0.09102723799465517, 1.0], # saturation range
-            [0.48860718137548237, 1.0] # value range
-        ]
+
+        if detection_mode == "line":
+            distances = [
+                [1.0, 0.37443759630528706], # hue range
+                [0.3, 1.0], # saturation range
+                [0.48860718137548237, 1.0] # value range
+            ]
+        elif detection_mode == "cone":
+            distances = [
+                [1.0, 0.37443759630528706], # hue range
+                [0.09102723799465517, 1.0], # saturation range
+                [0.48860718137548237, 1.0] # value range
+            ]
     
     if filter_specs is None:
         filter_specs = {
