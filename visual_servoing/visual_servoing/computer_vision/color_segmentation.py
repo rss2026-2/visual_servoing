@@ -58,7 +58,7 @@ def filter_list_from_filter_specs(filter_specs):
     return filter_lis
 
 
-def cd_color_segmentation(img, template, distances = None, filter_specs = None):
+def cd_color_segmentation(img, template, distances = None, filter_specs = None, detection_mode = "cone"):
     """
     Implement the cone detection using color segmentation algorithm
     Input:
@@ -84,22 +84,39 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None):
 
     ### Tuned Parameters ###
     if distances is None:
-        distances = [
-            [0.22555346595529566, 0.37443759630528706], # hue range
-            [0.09102723799465517, 1.0], # saturation range
-            [0.48860718137548237, 0.5] # value range
-        ]
+
+        if detection_mode == "line":
+            distances = [
+                [.25, .1], # hue range
+                [.15, .15], # saturation range
+                [.5, .15] # value range
+            ]
+        elif detection_mode == "cone":
+            distances = [
+                [1.0, 0.37443759630528706], # hue range
+                [0.09102723799465517, 1.0], # saturation range
+                [0.48860718137548237, 1.0] # value range
+            ]
     
     if filter_specs is None:
-        filter_specs = {
-            "switch": [0, 1], # erosion: off, dilation: on
-            "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
-            "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
-        }
+        if detection_mode == "cone":
+            filter_specs = {
+                "switch": [1, 1], # erosion: off, dilation: on
+                "sizes" : [3, 5], # erosion: box_size 0, dilation: box_size 4
+                "iterations": [1, 2] # erosion: iterations 0, dilation: iterations 1
+            }
+        elif detection_mode == "line":
+            filter_specs = {
+                "switch": [1, 1], # erosion: off, dilation: on
+                "sizes" : [3, 5], # erosion: box_size 0, dilation: box_size 4
+                "iterations": [1, 2] # erosion: iterations 0, dilation: iterations 1
+            }
 
     ### Program ###
-    # avg_template_hsv = get_hsv_from_template(template)
-    avg_template_hsv = (9, 180, 150)
+    if detection_mode == "cone":
+        avg_template_hsv = get_hsv_from_template(template)
+    elif detection_mode == "line":
+        avg_template_hsv = (7, 180, 150)
     hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
 
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)

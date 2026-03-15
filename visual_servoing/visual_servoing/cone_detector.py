@@ -25,12 +25,15 @@ class ConeDetector(Node):
 
     def __init__(self):
         super().__init__("cone_detector")
+
+        self.declare_parameter("detection_mode", "cone")
         # set line follower image crop parameters
         self.declare_parameter("y_min", 0.0)
         self.declare_parameter("y_max", 1.0)
         # set proximity check parameters
         self.declare_parameter("prox_threshold", 0.0)
         
+        self.detection_mode = self.get_parameter("detection_mode").get_parameter_value().string_value
         self.y_min = self.get_parameter("y_min").get_parameter_value().double_value
         self.y_max = self.get_parameter("y_max").get_parameter_value().double_value
         self.prox_threshold = self.get_parameter("prox_threshold").get_parameter_value().double_value
@@ -69,7 +72,7 @@ class ConeDetector(Node):
         
         cropped_image = image[image_y_min:image_y_max,:]
         
-        bbox = cd_color_segmentation(cropped_image, self.cone_template)
+        bbox = cd_color_segmentation(cropped_image, self.cone_template, detection_mode = self.detection_mode)
 
         if bbox is not None:
             cv2.line(image, pt1 = (0, image_y_min), pt2 = (image_width-1, image_y_min), color = (0, 0, 255), thickness = 2)
@@ -83,12 +86,12 @@ class ConeDetector(Node):
             cone_msg = ConeLocationPixel()
             cone_msg.u, cone_msg.v = bottom_center_px
             cone_msg.v = cone_msg.v + int(self.y_min * image_height)
-            # proximity_msg = Bool()
-            # if cone_msg.v > cropped_image_height * (1 - self.prox_threshold):
-            #     proximity_msg.data = True
-            # else:
-            #     proximity_msg.data = False
-            # self.proximity_pub.publish(proximity_msg)
+            proximity_msg = Bool()
+            if cone_msg.v > image_height * (1 - self.prox_threshold):
+                proximity_msg.data = True
+            else:
+                proximity_msg.data = False
+            self.proximity_pub.publish(proximity_msg)
 
             self.cone_pub.publish(cone_msg)
 
