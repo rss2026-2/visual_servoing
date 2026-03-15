@@ -84,17 +84,16 @@ def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, 
 
     ### Tuned Parameters ###
     if hsv_range is None:
-
         if detection_mode == "line":
             hsv_range = get_hsv_range_by_colors(
                 hsv_low = hsv_convert_to_cv2((20, 20, 55)),
                 hsv_high =  hsv_convert_to_cv2((29, 90, 100))
             )
         elif detection_mode == "cone":
-            hsv_range = get_hsv_range_by_colors(
-                hsv_low = hsv_convert_to_cv2((20, 20, 55)),
-                hsv_high =  hsv_convert_to_cv2((29, 90, 100))
-            )
+            hsv_range = {
+                'lower': (np.float64(0.0), np.float64(231.6560756120999), np.float64(122.47303168670507)), 
+                'upper': (np.float64(74.62069078649506), np.float64(255.0), np.float64(255.0))
+                }
     
     if filter_specs is None:
         filter_specs = {
@@ -102,9 +101,12 @@ def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, 
                 "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
                 "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
         }
-    
+        
     if margins is None:
-        margins = (100, 200) #(x_margin, y_margin)
+        if detection_mode == "cone":
+            margins = (0, 3)
+        elif detection_mode == "line":
+            margins = (100, 200) #(x_margin, y_margin)
     
     ### Program ###
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)

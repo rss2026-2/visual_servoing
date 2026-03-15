@@ -126,8 +126,8 @@ def run_trial_bayesian(num_iterations, trial_name, starting_point = None):
         'sat_high': (0.0, 255.0),
         'val_low': (0.0, 255.0),    
         'val_high': (0.0, 255.0),
-        "x_margin": (0.0, 200.0),
-        "y_margin": (0.0, 200.0)
+        "x_margin": (0.0, 20.0),
+        "y_margin": (0.0, 50.0)
 
     }
 
@@ -137,20 +137,20 @@ def run_trial_bayesian(num_iterations, trial_name, starting_point = None):
     iter_bounds = (1.0, 4.0)
 
 
-    # for i in range(1, max_filters+1):
-    #     if i == 2: #only turn on the second switch, so only use one dilation filter with size 5 and 2 iterations
-    #         param_bounds[f"switch_{i}"] = (1,1.99)
-    #         param_bounds[f"size_{i}"] = (5.0,5.99)
-    #         param_bounds[f"iter_{i}"] = (2.0,2.99)
-    #     else:
-    #         param_bounds[f"switch_{i}"] = (0,0.99)
-    #         param_bounds[f"size_{i}"] = size_bounds
-    #         param_bounds[f"iter_{i}"] = iter_bounds
-
     for i in range(1, max_filters+1):
-        param_bounds[f"switch_{i}"] = (switch_bounds)
-        param_bounds[f"size_{i}"] = size_bounds
-        param_bounds[f"iter_{i}"] = iter_bounds
+        if i == 2 or i == 3: #only turn on the second switch, so only use one dilation filter with size 5 and 2 iterations
+            param_bounds[f"switch_{i}"] = (1,1.99)
+            param_bounds[f"size_{i}"] = (6.0,6.99)
+            param_bounds[f"iter_{i}"] = (4.0,4.99)
+        else:
+            param_bounds[f"switch_{i}"] = (0,0.99)
+            param_bounds[f"size_{i}"] = size_bounds
+            param_bounds[f"iter_{i}"] = iter_bounds
+
+    # for i in range(1, max_filters+1):
+    #     param_bounds[f"switch_{i}"] = (switch_bounds)
+    #     param_bounds[f"size_{i}"] = size_bounds
+    #     param_bounds[f"iter_{i}"] = iter_bounds
 
     # acquisition_function = acquisition.ExpectedImprovement(xi=0.0)
     optimizer = BayesianOptimization(
@@ -248,11 +248,11 @@ def run_trials(num_trials, num_iterations, trial_name, starting_point = None, tr
 
 if __name__ == '__main__':
 
-    starting_params = {'hue_low': np.float64(0.0), 'hue_high': np.float64(172.55759512388389), 'sat_low': np.float64(255.0), 'sat_high': np.float64(255.0), 'val_low': np.float64(93.20963749334699), 'val_high': np.float64(255.0), 'x_margin': np.float64(0.0), 'y_margin': np.float64(23.027410816175582), 'switch_1': np.float64(0.0), 'size_1': np.float64(2.0), 'iter_1': np.float64(1.0), 'switch_2': np.float64(1.999), 'size_2': np.float64(6.0), 'iter_2': np.float64(4.0), 'switch_3': np.float64(0.0), 'size_3': np.float64(6.0), 'iter_3': np.float64(1.0), 'switch_4': np.float64(0.0), 'size_4': np.float64(6.0), 'iter_4': np.float64(4.0), 'switch_5': np.float64(1.999), 'size_5': np.float64(6.0), 'iter_5': np.float64(4.0), 'switch_6': np.float64(0.0), 'size_6': np.float64(2.0), 'iter_6': np.float64(1.0)}
-    starting_target = 0.779827859890278
+    starting_params = {'hue_low': np.float64(0.0), 'hue_high': np.float64(139.60193939720276), 'sat_low': np.float64(232.20555183493386), 'sat_high': np.float64(253.7389425265687), 'val_low': np.float64(143.40429522983987), 'val_high': np.float64(253.09911711599446), 'x_margin': np.float64(1.2558736644414508), 'y_margin': np.float64(48.17037905581659), 'switch_1': np.float64(0.0), 'size_1': np.float64(2.0), 'iter_1': np.float64(1.0), 'switch_2': np.float64(1.999), 'size_2': np.float64(6.0), 'iter_2': np.float64(4.0), 'switch_3': np.float64(0.0), 'size_3': np.float64(6.0), 'iter_3': np.float64(1.0), 'switch_4': np.float64(0.0), 'size_4': np.float64(6.0), 'iter_4': np.float64(4.0), 'switch_5': np.float64(1.999), 'size_5': np.float64(6.0), 'iter_5': np.float64(4.0), 'switch_6': np.float64(0.0), 'size_6': np.float64(2.0), 'iter_6': np.float64(1.0)}
+    starting_target =  0.8262840658496285
 
     starting_point = (starting_params, starting_target)
 
-    run_trials(5, 200, "chikoritta", starting_point = starting_point, trial_type = "bayesian", plot = True)
+    run_trials(5, 200, "kingcrab", starting_point = starting_point, trial_type = "bayesian", plot = True)
 
     pass
