@@ -58,7 +58,7 @@ def filter_list_from_filter_specs(filter_specs):
     return filter_lis
 
 
-def cd_color_segmentation(img, template, distances = None, filter_specs = None, detection_mode = "cone"):
+def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, detection_mode = "cone", margins = None):
     """
     Implement the cone detection using color segmentation algorithm
     Input:
@@ -83,53 +83,30 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
     """
 
     ### Tuned Parameters ###
-    if distances is None:
+    if hsv_range is None:
 
         if detection_mode == "line":
-            distances = [
-                [.25, .2], # hue range
-                [.1, .2], # saturation range
-                [.2, .6] # value range
-            ]
+            hsv_range = get_hsv_range_by_colors(
+                hsv_low = hsv_convert_to_cv2((20, 20, 55)),
+                hsv_high =  hsv_convert_to_cv2((29, 90, 100))
+            )
         elif detection_mode == "cone":
-            distances = [
-                [1.0, 0.37443759630528706], # hue range
-                [0.09102723799465517, 1.0], # saturation range
-                [0.48860718137548237, 1.0] # value range
-            ]
+            hsv_range = get_hsv_range_by_colors(
+                hsv_low = hsv_convert_to_cv2((20, 20, 55)),
+                hsv_high =  hsv_convert_to_cv2((29, 90, 100))
+            )
     
     if filter_specs is None:
-        if detection_mode == "cone":
-            filter_specs = {
+        filter_specs = {
                 "switch": [0, 1], # erosion: off, dilation: on
                 "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
                 "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
-            }
-        elif detection_mode == "line":
-            filter_specs = {
-                "switch": [0, 1], # erosion: off, dilation: on
-                "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
-                "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
-            }
-
-    """
-    28.9, 70, 94
-    26.9, 65, 89
-    29.1, 87, 71
-    30.5, 77, 96
-    23.1, 65, 100
-    """
+        }
+    
+    if margins is None:
+        margins = (100, 200) #(x_margin, y_margin)
     
     ### Program ###
-    if detection_mode == "cone":
-        avg_template_hsv = get_hsv_from_template(template)
-        hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
-    elif detection_mode == "line":
-        hsv_range = get_hsv_range_by_colors(
-            hsv_low = hsv_convert_to_cv2((20, 20, 55)),
-            hsv_high =  hsv_convert_to_cv2((29, 90, 100))
-        )
-
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     color_mask = cv2.inRange(hsv_input_img, hsv_range["lower"], hsv_range["upper"])
 
@@ -141,9 +118,8 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
  
     contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    y_margin = 200
-    x_margin = 100
-
+    x_margin = margins[0]
+    y_margin = margins[1]
 
     img_height, img_width, _= img.shape
     bounding_box = None
@@ -210,26 +186,3 @@ def hsv_convert_to_cv2(hsv_input):
 
 def get_hsv_range_by_colors(hsv_low, hsv_high):
     return {"lower": np.array(hsv_low), "upper": np.array(hsv_high)}
-
-def get_hsv_range_by_distance(hsv, distances):
-    hue_dist_below, hue_dist_above = distances[0]
-    sat_dist_below, sat_dist_above = distances[1]
-    val_dist_below, val_dist_above = distances[2]
-
-    hue_max, sat_max, val_max = 179, 255, 255
-
-    hue, sat, val = hsv
-    
-    lower_bound = np.array([
-        hue - (hue * hue_dist_below),
-        sat - (sat * sat_dist_below),
-        val - (val * val_dist_below)
-    ])
-
-    upper_bound = np.array([
-        hue + (hue_max - hue) * hue_dist_above,
-        sat + (sat_max - sat) * sat_dist_above,
-        val + (val_max - val) * val_dist_above
-    ])
-    
-    return {"lower": lower_bound, "upper": upper_bound}

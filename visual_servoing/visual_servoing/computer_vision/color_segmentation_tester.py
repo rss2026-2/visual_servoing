@@ -15,11 +15,11 @@ from cv_test import  test_algorithm
 
 trials_directory = os.getcwd()+"/trials"
 
-def run_test(distance_range, filter_specs):
+def run_test(hsv_range = None, filter_specs = None, margins = None):
     cone_csv_path = "./test_images_cone/test_images_cone.csv"
     cone_template_path = './test_images_cone/cone_template.png'
 
-    scores = test_algorithm(cd_color_segmentation, cone_csv_path, cone_template_path, range_param = distance_range, filter_param = filter_specs)
+    scores = test_algorithm(cd_color_segmentation, cone_csv_path, cone_template_path, range_param = hsv_range, filter_param = filter_specs, margin_param = margins)
 
     if scores:
         return {
@@ -84,29 +84,35 @@ def run_trial_random(num_iterations, trial_name):
 
 
 def bayesian_func(hue_low, hue_high, sat_low, sat_high, val_low, val_high, 
-                  switch_1, switch_2, switch_3, switch_4, switch_5, switch_6, 
+                  x_margin, y_margin, switch_1, switch_2, switch_3, switch_4, switch_5, switch_6, 
                   size_1, size_2, size_3, size_4, size_5, size_6,
                   iter_1, iter_2, iter_3, iter_4, iter_5, iter_6):
     
-    distance_range = [(hue_low, hue_high), (sat_low, sat_high), (val_low, val_high)]
+    hsv_range = {
+        "lower" : (hue_low, sat_low, val_low), 
+        "upper" : (hue_high, sat_high, val_high)
+    }
+
     filter_specs = {
         "switch": np.array([switch_1, switch_2, switch_3, switch_4, switch_5, switch_6], dtype = int),
         "sizes": np.array([size_1, size_2, size_3, size_4, size_5, size_6], dtype = int),
         "iterations": np.array([iter_1, iter_2, iter_3, iter_4, iter_5, iter_6], dtype = int)
     }
-    new_score = run_test(distance_range, filter_specs)
+    margins = np.array((x_margin, y_margin), dtype=int)
+    new_score = run_test(hsv_range = hsv_range, margins = margins)
 
-    return {"distance_range": distance_range,
+    return {"hsv_range": hsv_range,
             "filter_specs": filter_specs,
+            "margins": margins,
             "score" : new_score
             }
-
     
 
 def run_trial_bayesian(num_iterations, trial_name, starting_point = None):
     trial_data = { #stores best data of current trial
         "range": None,
         "filter_specs": None,
+        "margins": None,
         "avg": 0,
         "min": 0,
         "target": 0,
@@ -114,34 +120,37 @@ def run_trial_bayesian(num_iterations, trial_name, starting_point = None):
     }
 
     param_bounds = {
-        'hue_low': (0.0, 1.0), 
-        'hue_high': (0.0, 1.0),
-        'sat_low': (0.0, 1.0),
-        'sat_high': (1.0, 1.0),
-        'val_low': (0.0, 1.0),    
-        'val_high': (1.0, 1.0),
+        'hue_low': (0.0, 180.0), 
+        'hue_high': (0.0, 180.0),
+        'sat_low': (0.0, 255.0),
+        'sat_high': (0.0, 255.0),
+        'val_low': (0.0, 255.0),    
+        'val_high': (0.0, 255.0),
+        "x_margin": (0.0, 200.0),
+        "y_margin": (0.0, 200.0)
+
     }
 
     max_filters = 6
     switch_bounds = (0.0, 1.999)
-    size_bounds = (2.0, 8.0)
+    size_bounds = (2.0, 6.0)
     iter_bounds = (1.0, 4.0)
 
 
-    for i in range(1, max_filters+1):
-        if i == 2: #only turn on the second switch, so only use one dilation filter with size 5 and 2 iterations
-            param_bounds[f"switch_{i}"] = (1,1.99)
-            param_bounds[f"size_{i}"] = (5.0,5.99)
-            param_bounds[f"iter_{i}"] = (2.0,2.99)
-        else:
-            param_bounds[f"switch_{i}"] = (0,0.99)
-            param_bounds[f"size_{i}"] = size_bounds
-            param_bounds[f"iter_{i}"] = iter_bounds
-
     # for i in range(1, max_filters+1):
-    #     param_bounds[f"switch_{i}"] = switch_bounds
-    #     param_bounds[f"size_{i}"] = size_bounds
-    #     param_bounds[f"iter_{i}"] = iter_bounds
+    #     if i == 2: #only turn on the second switch, so only use one dilation filter with size 5 and 2 iterations
+    #         param_bounds[f"switch_{i}"] = (1,1.99)
+    #         param_bounds[f"size_{i}"] = (5.0,5.99)
+    #         param_bounds[f"iter_{i}"] = (2.0,2.99)
+    #     else:
+    #         param_bounds[f"switch_{i}"] = (0,0.99)
+    #         param_bounds[f"size_{i}"] = size_bounds
+    #         param_bounds[f"iter_{i}"] = iter_bounds
+
+    for i in range(1, max_filters+1):
+        param_bounds[f"switch_{i}"] = (switch_bounds)
+        param_bounds[f"size_{i}"] = size_bounds
+        param_bounds[f"iter_{i}"] = iter_bounds
 
     # acquisition_function = acquisition.ExpectedImprovement(xi=0.0)
     optimizer = BayesianOptimization(
@@ -173,13 +182,14 @@ def run_trial_bayesian(num_iterations, trial_name, starting_point = None):
         new_results = bayesian_func(**new_params)
         new_avg, new_min = new_results["score"]["avg"], new_results["score"]["min"]
 
-        new_target = (new_avg + new_min) / 2 - np.sqrt(np.abs(new_avg - new_min))
-
+        # new_target = (new_avg + new_min) / 2 - np.sqrt(np.abs(new_avg - new_min))
+        new_target = (new_avg + new_min) / 2
         optimizer.register(params = new_params, target = new_target)
 
         if new_target > trial_data["target"]: #if there is a net increase
-            trial_data["range"] = np.array(new_results["distance_range"]).tolist()
+            trial_data["range"] = np.array(new_results["hsv_range"]).tolist()
             trial_data["filter_specs"]= np.array(new_results["filter_specs"]).tolist()
+            trial_data["margins"] = np.array(new_results["margins"]).tolist()
             trial_data["avg"]= new_avg
             trial_data["min"] = new_min
             trial_data["target"] = new_target
@@ -194,14 +204,12 @@ def run_trial_bayesian(num_iterations, trial_name, starting_point = None):
 
 def create_trial_record(iter, data):
     record_msg = f"""Iteration {iter+1}:
-    Ranges:
-        Hue: {data["range"][0]}
-        Saturation: {data["range"][1]}
-        Value: {data["range"][2]}
+    Ranges: {data["range"]}
     Avg: {data["avg"]}
     Min: {data["min"]}
     Target: {data["target"]}
     Filter Specs: {data["filter_specs"]}
+    Margins: {data["margins"]}
     Params: {data["params"]}
 
 """
@@ -240,11 +248,11 @@ def run_trials(num_trials, num_iterations, trial_name, starting_point = None, tr
 
 if __name__ == '__main__':
 
-    starting_params = {'hue_low': np.float64(0.21477133663277984), 'hue_high': np.float64(0.37984970977401367), 'sat_low': np.float64(0.09241312163553674), 'sat_high': np.float64(1.0), 'val_low': np.float64(0.49574286132606293), 'val_high': np.float64(1.0), 'switch_1': np.float64(0.5476381089856193), 'size_1': np.float64(7.52196191581993), 'iter_1': np.float64(1.3343218405685542), 'switch_2': np.float64(1.1804524546732253), 'size_2': np.float64(5.647604366663166), 'iter_2': np.float64(2.5681655681156053), 'switch_3': np.float64(0.2225009798771307), 'size_3': np.float64(7.702408967697437), 'iter_3': np.float64(2.2852301879515955), 'switch_4': np.float64(0.10410896739792515), 'size_4': np.float64(2.3929345185653026), 'iter_4': np.float64(3.779890429321243), 'switch_5': np.float64(0.9836820008836007), 'size_5': np.float64(4.907251392010587), 'iter_5': np.float64(2.197488266831934), 'switch_6': np.float64(0.39182893108109473), 'size_6': np.float64(7.068490808754028), 'iter_6': np.float64(2.0803699999669116)}
-    starting_target = 0.6203987132828895
+    starting_params = {'hue_low': np.float64(0.0), 'hue_high': np.float64(172.55759512388389), 'sat_low': np.float64(255.0), 'sat_high': np.float64(255.0), 'val_low': np.float64(93.20963749334699), 'val_high': np.float64(255.0), 'x_margin': np.float64(0.0), 'y_margin': np.float64(23.027410816175582), 'switch_1': np.float64(0.0), 'size_1': np.float64(2.0), 'iter_1': np.float64(1.0), 'switch_2': np.float64(1.999), 'size_2': np.float64(6.0), 'iter_2': np.float64(4.0), 'switch_3': np.float64(0.0), 'size_3': np.float64(6.0), 'iter_3': np.float64(1.0), 'switch_4': np.float64(0.0), 'size_4': np.float64(6.0), 'iter_4': np.float64(4.0), 'switch_5': np.float64(1.999), 'size_5': np.float64(6.0), 'iter_5': np.float64(4.0), 'switch_6': np.float64(0.0), 'size_6': np.float64(2.0), 'iter_6': np.float64(1.0)}
+    starting_target = 0.779827859890278
 
     starting_point = (starting_params, starting_target)
 
-    run_trials(10, 200, "rhino", starting_point = starting_point, trial_type = "bayesian", plot = True)
+    run_trials(5, 200, "chikoritta", starting_point = starting_point, trial_type = "bayesian", plot = True)
 
     pass
