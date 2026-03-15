@@ -76,7 +76,7 @@ class ConeDetector(Node):
         if new_bbox is not None:
             self.bbox_save = new_bbox
 
-        if self.bbox_last_found is not None:
+        if self.bbox_save is not None:
             cv2.line(image, pt1 = (0, image_y_min), pt2 = (image_width-1, image_y_min), color = (0, 0, 255), thickness = 2)
             cv2.line(image, pt1 = (0, image_y_max), pt2 = (image_width-1, image_y_max), color = (0, 0, 255), thickness = 2)
 
