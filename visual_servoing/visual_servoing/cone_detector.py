@@ -86,12 +86,12 @@ class ConeDetector(Node):
             cone_msg = ConeLocationPixel()
             cone_msg.u, cone_msg.v = bottom_center_px
             cone_msg.v = cone_msg.v + int(self.y_min * image_height)
-            # proximity_msg = Bool()
-            # if cone_msg.v > cropped_image_height * (1 - self.prox_threshold):
-            #     proximity_msg.data = True
-            # else:
-            #     proximity_msg.data = False
-            # self.proximity_pub.publish(proximity_msg)
+            proximity_msg = Bool()
+            if cone_msg.v > image_height * (1 - self.prox_threshold):
+                proximity_msg.data = True
+            else:
+                proximity_msg.data = False
+            self.proximity_pub.publish(proximity_msg)
 
             self.cone_pub.publish(cone_msg)
 
