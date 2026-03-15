@@ -83,9 +83,22 @@ class ConeDetector(Node):
             
             bottom_center_px = get_bottom_center_of_bounds(bbox)
 
+            if self.detection_mode == "line":
+                top_left_px, bottom_right_px = bbox
+                top_left_x, top_left_y = top_left_px
+                bottom_right_x, bottom_right_y = bottom_right_px
+
+                bottom_center_px = ( float((top_left_x + bottom_right_x) / 2), float((top_left_y +bottom_right_y) /2))
+            elif self.detetection_mode == "cone":
+                bottom_center_px = get_bottom_center_of_bounds(bbox)
+
+
             cone_msg = ConeLocationPixel()
             cone_msg.u, cone_msg.v = bottom_center_px
             cone_msg.v = cone_msg.v + int(self.y_min * image_height)
+
+            if self.detection_mode == "line":
+                return 
             proximity_msg = Bool()
             if cone_msg.v > image_height * (1 - self.prox_threshold):
                 proximity_msg.data = True
