@@ -94,6 +94,7 @@ class HomographyTransformer(Node):
         self.get_logger().info(f'{u=}, {v=}')
 
         x, y = self.transformUvToXy(u, v)
+        self.get_logger().info(f'{x=}, {y=}')
         self.draw_marker(x, y, "/base_link")
 
     def transformUvToXy(self, u, v):
