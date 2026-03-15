@@ -138,10 +138,13 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
     )
 
     filtered_mask = filter_cascade(color_mask)
- 
-    contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    margin = 100
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 5))
+    connected_mask = cv2.morphologyEx(filtered_mask, cv2.MORPH_CLOSE, kernel)
+ 
+    contours, _ = cv2.findContours(connected_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+    margin = 50
 
     bounding_box = None
     if len(contours) != 0:
