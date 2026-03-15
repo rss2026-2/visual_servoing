@@ -1,6 +1,9 @@
 <launch>
 
     <node pkg="visual_servoing" name="homography_transformer" exec="homography_transformer" output="screen">
+    </node>
+
+    <node pkg="visual_servoing" name="homography_tester" exec="homography_tester" output="screen">
         <param from="$(find-pkg-share wall_follower)/params_hom_test.yaml"/>
     </node>
 
