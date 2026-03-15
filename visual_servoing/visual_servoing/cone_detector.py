@@ -92,7 +92,7 @@ class ConeDetector(Node):
 
                 bottom_center_px = (float((top_left_x + bottom_right_x) / 2), float(top_left_y))
            
-            elif self.detetection_mode == "cone":
+            elif self.detection_mode == "cone":
                 bottom_center_px = get_bottom_center_of_bounds(self.bbox_save)
 
 
