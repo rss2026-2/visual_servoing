@@ -65,8 +65,9 @@ class ConeDetector(Node):
         cone_template = cv2.imread("/root/racecar_ws/src/visual_servoing/visual_servoing/visual_servoing/computer_vision/test_images_cone/cone_template.png")
 
         # crop image
-        
+        print(self.DETECTION_MODE)
         if self.DETECTION_MODE == "line":
+            print()
             image_height = image.shape[0]
             image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
             
