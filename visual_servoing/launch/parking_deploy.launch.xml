@@ -13,7 +13,7 @@
     <param name="y_min" value="0.0" />
     <param name="y_max" value="1.0" />
     <param name="detection_mode" value="cone" />
-    <param name="prox_threshold" value="False" />
+    <param name="prox_threshold" value="0.1" />
   </node>
 
   <node pkg="visual_servoing" name="homography_transformer" exec="homography_transformer" output="screen">
