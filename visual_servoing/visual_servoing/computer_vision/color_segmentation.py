@@ -87,9 +87,9 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
 
         if detection_mode == "line":
             distances = [
-                [1.0, 0.37443759630528706], # hue range
-                [0.3, 1.0], # saturation range
-                [0.48860718137548237, 1.0] # value range
+                [.25, .1], # hue range
+                [.15, .15], # saturation range
+                [.5, .15] # value range
             ]
         elif detection_mode == "cone":
             distances = [
@@ -106,7 +106,10 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
         }
 
     ### Program ###
-    avg_template_hsv = get_hsv_from_template(template)
+    if detection_mode == "cone":
+        avg_template_hsv = get_hsv_from_template(template)
+    elif detection_mode == "line":
+        avg_template_hsv = (7, 180, 150)
     hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
 
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
