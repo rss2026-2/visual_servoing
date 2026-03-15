@@ -72,6 +72,7 @@ class ConeDetector(Node):
             
             image = image[image_y_min:image_y_max,:]
 
+        print(image.shape)
         image_height, image_width = image.shape
         
         bbox = cd_color_segmentation(image, cone_template)
