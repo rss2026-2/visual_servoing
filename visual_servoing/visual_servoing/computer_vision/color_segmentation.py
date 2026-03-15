@@ -127,7 +127,7 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
     elif detection_mode == "line":
         hsv_range = get_hsv_range_by_colors(
             hsv_low = hsv_convert_to_cv2((20, 20, 55)),
-            hsv_high =  hsv_convert_to_cv2((29, 70, 100))
+            hsv_high =  hsv_convert_to_cv2((32, 90, 100))
         )
 
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
