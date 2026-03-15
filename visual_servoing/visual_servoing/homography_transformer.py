@@ -82,20 +82,28 @@ class HomographyTransformer(Node):
         relative_xy_msg.x_pos = x
         relative_xy_msg.y_pos = y
 
-        self.cone_pub.publish(relative_xy_msg)
         self.draw_marker(x, y, '/base_link')
+        self.cone_pub.publish(relative_xy_msg)
 
     def click_callback(self, msg):
         self.get_logger().info("Click detected")
         u = msg.x
         v = msg.y
-
-        # self.get_logger().info(f'{msg=}')
-        self.get_logger().info(f'{u=}, {v=}')
+        
 
         x, y = self.transformUvToXy(u, v)
+        
+        self.get_logger().info(f'{u=}, {v=}')
         self.get_logger().info(f'{x=}, {y=}')
+        
+        # Publish relative xy position of object in real world
+        relative_xy_msg = ConeLocation()
+        relative_xy_msg.x_pos = x
+        relative_xy_msg.y_pos = y
+        
         self.draw_marker(x, y, "/base_link")
+        self.cone_pub.publish(relative_xy_msg)
+        
 
     def transformUvToXy(self, u, v):
         """
