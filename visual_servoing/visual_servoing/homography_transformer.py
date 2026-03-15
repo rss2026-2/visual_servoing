@@ -86,12 +86,12 @@ class HomographyTransformer(Node):
         self.draw_marker(x, y, '/base_link')
 
     def click_callback(self, msg):
-        self.get_logger().info("Click detected")
+        # self.get_logger().info("Click detected")
         u = msg.x
         v = msg.y
 
-        self.get_logger().info(f'{msg=}')
-        self.get_logger().info(f'{u=}, {v=}')
+        # self.get_logger().info(f'{msg=}')
+        # self.get_logger().info(f'{u=}, {v=}')
 
         x, y = self.transformUvToXy(u, v)
         self.draw_marker(x, y, "/zed_camera_link")
@@ -115,7 +115,7 @@ class HomographyTransformer(Node):
         homogeneous_xy = xy * scaling_factor
         x = homogeneous_xy[0, 0]
         y = homogeneous_xy[1, 0]
-        self.get_logger().info(f"x-value: {x} \n y-value: {y}")
+        # self.get_logger().info(f"x-value: {x} \n y-value: {y}")
         return x, y
 
     def draw_marker(self, cone_x, cone_y, message_frame):

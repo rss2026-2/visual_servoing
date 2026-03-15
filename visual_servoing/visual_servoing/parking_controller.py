@@ -81,7 +81,7 @@ class ParkingController(Node):
         4. How can we keep the cone in frame when we are using our real camera?
             dont give super exageerated angles, don't go past"""
 
-        self.get_logger().info(f'New Drive Command')
+        # self.get_logger().info(f'New Drive Command')
 
         header = Header()
         header.stamp = self.get_clock().now().to_msg()
@@ -90,7 +90,7 @@ class ParkingController(Node):
 
         # Generate spline path
         path = self.generate_hermite_path(self.relative_x, self.relative_y)
-        self.get_logger().info(f'Path: {path[0]}')
+        # self.get_logger().info(f'Path: {path[0]}')
 
         # visualize path
         # VisualizationTools.plot_line(path[:,0], path[:,1], self.desired_publisher_)
@@ -98,7 +98,7 @@ class ParkingController(Node):
         goal_dist = np.sqrt(self.relative_x**2 + self.relative_y**2)
 
         self.LOOKAHEAD = max(0.3, min(1.2, 0.5 * goal_dist))
-        self.get_logger().info(f'{self.LOOKAHEAD=}')
+        # self.get_logger().info(f'{self.LOOKAHEAD=}')
 
 
         # choose lookahead target
