@@ -141,17 +141,29 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
  
     contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    box_max = 0
+    margin = 20
+
     bounding_box = None
-    for contour in contours:
-        x, y, w, h = cv2.boundingRect(contour)
+    if len(contours) != 0:
+        biggest_ctr = max(contours, key = cv2.contourArea)
+        bx, by, bw, bh = cv2.boundingRect(biggest_ctr)
 
-        if w * h > box_max: # choose the biggest contour
-            bounding_box = ((x,y), (x+w, y+h))
-            box_max = w * h
+        expanded_bbox = [(bx - margin, by - margin), (bx + bw + margin, by + bh + margin)]
+        left, right, top, bottom = bx - margin, bx + bw+ margin, by - margin, by+bh+margin
 
-    ########### YOUR CODE ENDS HERE ########### 
-    # Return bounding box
+
+        close_contours = []
+
+        for ctr in contours:
+            cx, cy, cw, ch = cv2.boundingRect(ctr)
+
+            #check if the contour overlaps with the biggest contour
+            if not (cx > right or cx+cw < left or cy > bottom or cy+ch < top): 
+                close_contours.append(ctr)
+        
+        x,y,w,h = cv2.boundingRect(np.vstack(close_contours))
+        bounding_box = ((x,y), (x+w, y+h))
+
     return bounding_box
 
 def get_cone_image(img_num = None):
