@@ -68,10 +68,8 @@ class ConeDetector(Node):
         image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
         
         cropped_image = image[image_y_min:image_y_max,:]
-        cropped_image_height = cropped_image.shape[0]
         
         bbox = cd_color_segmentation(cropped_image, self.cone_template)
-
 
         if bbox is not None:
             cv2.line(image, pt1 = (0, int(self.y_min * image_height)), pt2 = (image_width-1, int(self.y_min * image_height)), color = (0, 0, 255), thickness = 2)
