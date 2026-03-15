@@ -142,22 +142,25 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
     contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
     margin = 100
-
+    img_height, img_width, _= img.shape
     bounding_box = None
     if len(contours) != 0:
         biggest_ctr = max(contours, key = cv2.contourArea)
         bx, by, bw, bh = cv2.boundingRect(biggest_ctr)
 
-        left, right, top, bottom = bx - margin, bx + bw + margin, by - margin, by+bh+margin
+        left, right, top, bottom = max(bx - margin, 0), min(bx + bw + margin, img_width-1), max(by - margin, 0), min(by+bh+margin, img_height-1)
 
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 5))
         region_of_interest_mask = filtered_mask[top:bottom, left:right].copy()
+        
         region_of_interest_mask = cv2.morphologyEx(region_of_interest_mask, cv2.MORPH_CLOSE, kernel)
 
         contours_in_roi, _ = cv2.findContours(region_of_interest_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
         
         for ctr in contours_in_roi:
-            ctr[0] = (ctr[0][0] + left, ctr[0][1] + top)
+            for point in ctr:
+                point[0] = (point[0][0] + left, point[0][1] + top)
+
         x,y,w,h = cv2.boundingRect(np.vstack(contours_in_roi))
         bounding_box = ((x,y), (x+w, y+h))
 
