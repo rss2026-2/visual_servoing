@@ -11,8 +11,8 @@
   </node>
 
   <node pkg="visual_servoing" name="cone_detector" exec="cone_detector" output="screen">
-    <param name="y_min" value="0.55" />
-    <param name="y_max" value="0.84" />
+    <param name="y_min" value="0.4" />
+    <param name="y_max" value="0.638" />
     <param name="detection_mode" value="line" />
   </node>
 
