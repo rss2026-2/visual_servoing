@@ -141,7 +141,7 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
  
     contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    margin = 50
+    margin = 100
 
     bounding_box = None
     if len(contours) != 0:
