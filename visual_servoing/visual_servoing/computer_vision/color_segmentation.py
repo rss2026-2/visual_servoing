@@ -89,7 +89,7 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
             distances = [
                 [.25, .2], # hue range
                 [.1, .2], # saturation range
-                [.2, .2] # value range
+                [.2, .6] # value range
             ]
         elif detection_mode == "cone":
             distances = [
