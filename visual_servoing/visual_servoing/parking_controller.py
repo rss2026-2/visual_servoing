@@ -228,26 +228,35 @@ class ParkingController(Node):
         # calculate with the pure persuit
         new_steering_angle = self.compute_feedback_angle(target_point)
 
-        # If the turn we have to make is too tight
-        if abs(new_steering_angle) > self.MAX_STEERING_ANGLE * self.STEERING_ANGLE_THRESH:
+        # If the turn we have to make is too tight or the cone is cut off, or the cone is just plainly too close, reverse first
+        turning_angle_too_tight = abs(new_steering_angle) > self.MAX_STEERING_ANGLE * self.STEERING_ANGLE_THRESH
+        detected_cone_too_close = self.proximity_check
+        cone_too_close = goal_dist < self.parking_distance_min
+        if turning_angle_too_tight or  detected_cone_too_close or cone_too_close:
             drive.speed = -0.5
             reverse_angle = -0.5 * new_steering_angle
             drive.steering_angle = float(np.clip(reverse_angle,
                                      -self.MAX_STEERING_ANGLE,
                                      self.MAX_STEERING_ANGLE))
 
-        else:
+        else: # if it is in front of us reasonable angle, give it that angle
             drive.steering_angle = float(np.clip(new_steering_angle,
                                     -self.MAX_STEERING_ANGLE,
                                     self.MAX_STEERING_ANGLE))
 
             # slow down near goal
-            dist = np.linalg.norm(target_point)
-
-            if dist < 1.0:
-                drive.speed = self.VELOCITY * 0.5
-            else:
+            if goal_dist > 1.5:
                 drive.speed = self.VELOCITY
+            elif goal_dist > 0.9:
+                drive.speed = 0.6 * self.VELOCITY
+            elif goal_dist > 0.6:
+                drive.speed = 0.3 * self.VELOCITY
+            else:
+                drive.speed = 0.15
+            # if goal_dist < 1.0:
+            #     drive.speed = self.VELOCITY * 0.5
+            # else:
+            #     drive.speed = self.VELOCITY
 
         return drive
 
