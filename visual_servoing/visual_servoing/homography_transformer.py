@@ -33,10 +33,10 @@ PTS_IMAGE_PLANE = [[199, 196], # avg over 5 clicks (199 196, 199 196, 199 195, 2
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[46.375, 17.25], # avg over 3 measurements
-                    [37.5, -7.75], # avg over 3 measurements
-                    [24, 12.0], # avg over 3 measurements
-                    [13.25, -1.625]]  # avg over 3 measurements
+PTS_GROUND_PLANE = [[46.65, 17.25], # avg over 3 measurements
+                    [37.775, -7.75], # avg over 3 measurements
+                    [24.275, 12.0], # avg over 3 measurements
+                    [13.525, -1.625]]  # avg over 3 measurements
 ######################################################
 
 METERS_PER_INCH = 0.0254
