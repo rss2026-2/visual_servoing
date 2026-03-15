@@ -26,8 +26,8 @@ class ConeDetector(Node):
     def __init__(self):
         super().__init__("cone_detector")
         # set line follower image crop parameters
-        self.declare_parameter("y_min", 0.0)
-        self.declare_parameter("y_max", 1.0)
+        self.declare_parameter("y_min", 0.54)
+        self.declare_parameter("y_max", 0.638)
         # set proximity check parameters
         self.declare_parameter("prox_threshold", 0.0)
         
