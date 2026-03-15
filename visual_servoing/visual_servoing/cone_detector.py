@@ -42,6 +42,8 @@ class ConeDetector(Node):
         self.proximity_pub = self.create_publisher(Bool, "/proximity_check", 10)
         self.bridge = CvBridge()  # Converts between ROS images and OpenCV Images
 
+        self.cone_template =  cv2.imread("/root/racecar_ws/src/visual_servoing/visual_servoing/visual_servoing/computer_vision/test_images_cone/cone_template.png")
+
         self.get_logger().info("Cone Detector Initialized")
 
     def image_callback(self, image_msg):
@@ -59,8 +61,6 @@ class ConeDetector(Node):
         #################################
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
-        cone_template = cv2.imread("/root/racecar_ws/src/visual_servoing/visual_servoing/visual_servoing/computer_vision/test_images_cone/cone_template.png")
-
 
 
         # crop image
@@ -70,7 +70,7 @@ class ConeDetector(Node):
         cropped_image = image[image_y_min:image_y_max,:]
         cropped_image_height = cropped_image.shape[0]
         
-        bbox = cd_color_segmentation(cropped_image, cone_template)
+        bbox = cd_color_segmentation(cropped_image, self.cone_template)
 
 
         if bbox is not None:
@@ -79,22 +79,24 @@ class ConeDetector(Node):
 
             bbox_uncropped = [(bbox[0][0], bbox[0][1] + int(self.y_min * image_height)), (bbox[1][0], bbox[1][1] +  int(self.y_min * image_height))]
             cv2.rectangle(image, bbox_uncropped[0], bbox_uncropped[1], (255,0,0), 2)
-
-            debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
-            self.debug_pub.publish(debug_msg)
             
             bottom_center_px = get_bottom_center_of_bounds(bbox)
 
             cone_msg = ConeLocationPixel()
             cone_msg.u, cone_msg.v = bottom_center_px
+            cone_msg.v = cone_msg.v + int(self.y_min * image_height)
+            # proximity_msg = Bool()
+            # if cone_msg.v > cropped_image_height * (1 - self.prox_threshold):
+            #     proximity_msg.data = True
+            # else:
+            #     proximity_msg.data = False
+            # self.proximity_pub.publish(proximity_msg)
 
-            proximity_msg = Bool()
-            if cone_msg.v > cropped_image_height * (1 - self.prox_threshold):
-                proximity_msg.data = True
-            else:
-                proximity_msg.data = False
-            self.proximity_pub.publish(proximity_msg)
             self.cone_pub.publish(cone_msg)
+
+
+        debug_msg = self.bridge.cv2_to_imgmsg(image, "bgr8")
+        self.debug_pub.publish(debug_msg)
 
 def get_bottom_center_of_bounds(bounding_box):
     top_left_px, bottom_right_px = bounding_box
