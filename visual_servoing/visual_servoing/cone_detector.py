@@ -9,6 +9,7 @@ from cv_bridge import CvBridge, CvBridgeError
 
 from sensor_msgs.msg import Image
 from geometry_msgs.msg import Point #geometry_msgs not in CMake file
+from std_msgs.msg import Bool
 from vs_msgs.msg import ConeLocationPixel
 
 # import your color segmentation algorithm; call this function in ros_image_callback!
@@ -30,14 +31,18 @@ class ConeDetector(Node):
         # set line follower image crop parameters
         self.declare_parameter("y_min", 0.0)
         self.declare_parameter("y_max", 1.0)
+        # set proximity check parameters
+        self.declare_parameter("prox_threshold", 0.0)
         
         self.y_min = self.get_parameter("y_min").get_parameter_value().double_value
         self.y_max = self.get_parameter("y_max").get_parameter_value().double_value
+        self.prox_threshold = self.get_parameter("prox_threshold").get_parameter_value().double_vale
 
         # Subscribe to ZED camera RGB frames
         self.cone_pub = self.create_publisher(ConeLocationPixel, "/relative_cone_px", 10)
         self.debug_pub = self.create_publisher(Image, "/cone_debug_img", 10)
         self.image_sub = self.create_subscription(Image, "/zed/zed_node/rgb/image_rect_color", self.image_callback, 5)
+        self.proximity_pub = self.create_publisher(Bool, "/proximity_check", 10)
         self.bridge = CvBridge()  # Converts between ROS images and OpenCV Images
 
         self.get_logger().info("Cone Detector Initialized")
@@ -67,6 +72,7 @@ class ConeDetector(Node):
             
             image = image[image_y_min:image_y_max,:]
 
+        image_height, image_width = image.shape
         
         bbox = cd_color_segmentation(image, cone_template)
 
@@ -80,7 +86,13 @@ class ConeDetector(Node):
 
             cone_msg = ConeLocationPixel()
             cone_msg.u, cone_msg.v = bottom_center_px
-            
+
+            proximity_msg = Bool()
+            if cone_msg.v > image_height * (1 - self.prox_threshold):
+                proximity_msg.data = True
+            else:
+                proximity_msg.data = False
+            self.proximity_pub.publish(proximity_msg)
             self.cone_pub.publish(cone_msg)
 
 def get_bottom_center_of_bounds(bounding_box):

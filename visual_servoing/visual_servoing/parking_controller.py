@@ -6,7 +6,7 @@ import numpy as np
 
 from vs_msgs.msg import ConeLocation, ParkingError
 from ackermann_msgs.msg import AckermannDriveStamped, AckermannDrive
-from std_msgs.msg import Header
+from std_msgs.msg import Header, Bool
 
 
 
@@ -28,6 +28,10 @@ class ParkingController(Node):
 
         self.create_subscription(
             ConeLocation, "/relative_cone", self.relative_cone_callback, 1)
+        
+        self.create_subscription(
+            Bool, "/proximity_check", self.proximity_check_callback, 1
+        )
 
         self.parking_distance_min = 0.45 # meters; try playing with this number! it should be 1.5 - 2 feet away (0.45 - 0.6 m)
         self.parking_distance_max = 0.6
@@ -48,6 +52,7 @@ class ParkingController(Node):
         self.STEERING_ANGLE_THRESH = 1.2 # initially working with it at 0.9 but it was reversing a lot
 
         self.drive_cmd = None
+        self.proximity_check = False
 
         timer_rate = 20
         self.create_timer(1/timer_rate, self.timer_callback)
@@ -58,6 +63,9 @@ class ParkingController(Node):
         if self.drive_cmd is not None:
             self.drive_pub.publish(self.drive_cmd)
             self.error_publisher()
+    
+    def proximity_check_callback(self, msg):
+        self.proximity_check = msg.data
 
     def relative_cone_callback(self, msg):
         self.relative_x = msg.x_pos
