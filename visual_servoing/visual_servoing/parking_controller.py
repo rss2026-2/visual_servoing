@@ -28,7 +28,7 @@ class ParkingController(Node):
 
         self.create_subscription(
             ConeLocation, "/relative_cone", self.relative_cone_callback, 1)
-
+        
         self.create_subscription(
             Bool, "/proximity_check", self.proximity_check_callback, 1
         )
@@ -63,7 +63,7 @@ class ParkingController(Node):
         if self.drive_cmd is not None:
             self.drive_pub.publish(self.drive_cmd)
             self.error_publisher()
-
+    
     def proximity_check_callback(self, msg):
         self.proximity_check = msg.data
 
@@ -105,7 +105,9 @@ class ParkingController(Node):
 
         goal_dist = np.sqrt(self.relative_x**2 + self.relative_y**2)
 
-        self.LOOKAHEAD = max(0.6, min(1.2, 0.5 * goal_dist))
+        self.LOOKAHEAD = max(0.3, min(1.2, 0.5 * goal_dist))
+        # self.get_logger().info(f'{self.LOOKAHEAD=}')
+
 
         # choose lookahead target
         target_point = self.get_lookahead_point(path)
@@ -136,10 +138,11 @@ class ParkingController(Node):
 
         self.error_pub.publish(error_msg)
 
-    def generate_hermite_path(self, cone_x, cone_y, num_points=50):
+    def generate_hermite_path(self, cone_x, cone_y, tangent_strength=None, num_points=50):
         """
         Calculates a smooth path to a cone in the car's local frame.
         - cone_x, cone_y: Position of the cone relative to the car.
+        - tangent_strength: Controls 'curviness'. Default is 1.5x the distance.
         """
 
         # 1. Start: Car is at (0,0) facing +X
@@ -155,10 +158,11 @@ class ParkingController(Node):
         # 3. Tangents: Direction car should be moving at start and end
         # Strength (L) affects how wide the turn is
         dist_to_goal = np.linalg.norm(p1 - p0)
-        L = dist_to_goal * 1.5
+        L = tangent_strength if tangent_strength else dist_to_goal * 1.5
 
-        m0 = np.array([L, 0.0])                           # Start tangent: straight forward
+        m0 = np.array([L, 0.0])              # Start tangent: straight forward
         m1 = np.array([L * np.cos(phi), L * np.sin(phi)]) # End tangent: facing cone
+        # can also change this to be m1 = np.array([L, 0.0])
 
         # 4. Generate the Spline points
         t = np.linspace(0, 1, num_points)
@@ -180,6 +184,11 @@ class ParkingController(Node):
         """
         Returns the first point on the path at least LOOKAHEAD distance away.
         """
+        # for p in path:
+        #     if np.linalg.norm(p) > self.LOOKAHEAD:
+        #         return p
+
+        # return path[-1]
         dists = np.linalg.norm(path, axis=1)
         closest_idx = np.argmin(dists)
 
@@ -209,8 +218,9 @@ class ParkingController(Node):
         # Check to see if we are too close
         goal_dist = np.sqrt(self.relative_x**2 + self.relative_y**2)
 
-        # park if we are in stopping range and pointed to the cone
+        # if we are in the stopping range and pointed at the cone, it's okay
         if goal_dist < self.parking_distance_max and goal_dist > self.parking_distance_min and self.pointed_at_cone():
+            # TODO add something here if we are too close but not pointed well...
             drive.speed = 0.0
             drive.steering_angle = 0.0
             return drive

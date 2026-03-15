@@ -64,7 +64,7 @@ class ConeDetector(Node):
 
 
         # crop image
-        print("I AM CROP")
+        self.get_logger().info("I AM CROP")
         image_width, image_height = image.shape[0], image.shape[1]
         image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
         
