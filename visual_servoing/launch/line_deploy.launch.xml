@@ -13,7 +13,7 @@
   <node pkg="visual_servoing" name="cone_detector" exec="cone_detector" output="screen">
     <param name="y_min" value="0.55" />
     <param name="y_max" value="0.84" />
-    <param name="mode" value="line" />
+    <param name="detection_mode" value="line" />
   </node>
 
   <node pkg="visual_servoing" name="homography_transformer" exec="homography_transformer" output="screen">

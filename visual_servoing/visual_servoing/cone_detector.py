@@ -67,13 +67,12 @@ class ConeDetector(Node):
         # crop image
         
         if self.DETECTION_MODE == "line":
-            image_height, _ = image.shape
+            image_height = image.shape[0]
             image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
             
             image = image[image_y_min:image_y_max,:]
 
-        print(image.shape)
-        image_height, image_width = image.shape
+        image_height = image.shape[0]
         
         bbox = cd_color_segmentation(image, cone_template)
 
