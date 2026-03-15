@@ -99,11 +99,18 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
             ]
     
     if filter_specs is None:
-        filter_specs = {
-            "switch": [0, 1], # erosion: off, dilation: on
-            "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
-            "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
-        }
+        if detection_mode == "cone":
+            filter_specs = {
+                "switch": [1, 1], # erosion: off, dilation: on
+                "sizes" : [3, 5], # erosion: box_size 0, dilation: box_size 4
+                "iterations": [1, 2] # erosion: iterations 0, dilation: iterations 1
+            }
+        elif detection_mode == "line":
+            filter_specs = {
+                "switch": [1, 1], # erosion: off, dilation: on
+                "sizes" : [3, 5], # erosion: box_size 0, dilation: box_size 4
+                "iterations": [1, 2] # erosion: iterations 0, dilation: iterations 1
+            }
 
     ### Program ###
     if detection_mode == "cone":
