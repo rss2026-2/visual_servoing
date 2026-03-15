@@ -87,9 +87,9 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
 
         if detection_mode == "line":
             distances = [
-                [.25, .1], # hue range
-                [.15, .15], # saturation range
-                [.5, .15] # value range
+                [.25, .2], # hue range
+                [.1, .2], # saturation range
+                [.2, .2] # value range
             ]
         elif detection_mode == "cone":
             distances = [
@@ -101,15 +101,15 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
     if filter_specs is None:
         if detection_mode == "cone":
             filter_specs = {
-                "switch": [1, 1], # erosion: off, dilation: on
-                "sizes" : [3, 5], # erosion: box_size 0, dilation: box_size 4
-                "iterations": [1, 2] # erosion: iterations 0, dilation: iterations 1
+                "switch": [0, 1], # erosion: off, dilation: on
+                "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
+                "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
             }
         elif detection_mode == "line":
             filter_specs = {
-                "switch": [1, 1], # erosion: off, dilation: on
-                "sizes" : [3, 5], # erosion: box_size 0, dilation: box_size 4
-                "iterations": [1, 2] # erosion: iterations 0, dilation: iterations 1
+                "switch": [0, 1], # erosion: off, dilation: on
+                "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
+                "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
             }
 
     ### Program ###
