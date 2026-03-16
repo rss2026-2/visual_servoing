@@ -58,7 +58,7 @@ def filter_list_from_filter_specs(filter_specs):
     return filter_lis
 
 
-def cd_color_segmentation(img, template, distances = None, filter_specs = None, detection_mode = "cone"):
+def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, detection_mode = "cone", margins = None):
     """
     Implement the cone detection using color segmentation algorithm
     Input:
@@ -83,53 +83,31 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
     """
 
     ### Tuned Parameters ###
-    if distances is None:
-
+    if hsv_range is None:
         if detection_mode == "line":
-            distances = [
-                [.25, .2], # hue range
-                [.1, .2], # saturation range
-                [.2, .6] # value range
-            ]
+            hsv_range = get_hsv_range_by_colors(
+                hsv_low = hsv_convert_to_cv2((20, 20, 55)),
+                hsv_high =  hsv_convert_to_cv2((29, 90, 100))
+            )
         elif detection_mode == "cone":
-            distances = [
-                [1.0, 0.37443759630528706], # hue range
-                [0.09102723799465517, 1.0], # saturation range
-                [0.48860718137548237, 1.0] # value range
-            ]
+            hsv_range = {
+                'lower': (np.float64(0.0), np.float64(231.6560756120999), np.float64(122.47303168670507)), 
+                'upper': (np.float64(74.62069078649506), np.float64(255.0), np.float64(255.0))
+                }
     
     if filter_specs is None:
+        filter_specs = {
+                "switch": [0, 1], # erosion: off, dilation: on
+                "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
+                "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
+        }
+    if margins is None:
         if detection_mode == "cone":
-            filter_specs = {
-                "switch": [0, 1], # erosion: off, dilation: on
-                "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
-                "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
-            }
+            margins = (0, 3)
         elif detection_mode == "line":
-            filter_specs = {
-                "switch": [0, 1], # erosion: off, dilation: on
-                "sizes" : [0, 5], # erosion: box_size 0, dilation: box_size 4
-                "iterations": [0, 2] # erosion: iterations 0, dilation: iterations 1
-            }
-
-    """
-    28.9, 70, 94
-    26.9, 65, 89
-    29.1, 87, 71
-    30.5, 77, 96
-    23.1, 65, 100
-    """
+            margins = (100, 200) #(x_margin, y_margin)
     
     ### Program ###
-    if detection_mode == "cone":
-        avg_template_hsv = get_hsv_from_template(template)
-        hsv_range = get_hsv_range_by_distance(avg_template_hsv, distances)
-    elif detection_mode == "line":
-        hsv_range = get_hsv_range_by_colors(
-            hsv_low = hsv_convert_to_cv2((22, 20, 65)),
-            hsv_high =  hsv_convert_to_cv2((32, 90, 100))
-        )
-
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     color_mask = cv2.inRange(hsv_input_img, hsv_range["lower"], hsv_range["upper"])
 
@@ -141,17 +119,32 @@ def cd_color_segmentation(img, template, distances = None, filter_specs = None, 
  
     contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
 
-    box_max = 0
+    x_margin = margins[0]
+    y_margin = margins[1]
+
+    img_height, img_width, _= img.shape
     bounding_box = None
-    for contour in contours:
-        x, y, w, h = cv2.boundingRect(contour)
+    if len(contours) != 0:
+        biggest_ctr = max(contours, key = cv2.contourArea)
+        bx, by, bw, bh = cv2.boundingRect(biggest_ctr)
 
-        if w * h > box_max: # choose the biggest contour
-            bounding_box = ((x,y), (x+w, y+h))
-            box_max = w * h
+        left, right = max(bx - x_margin, 0), min(bx + bw + x_margin, img_width-1)
+        top, bottom = max(by - y_margin, 0), min(by+bh+y_margin, img_height-1)
+        
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 5))
+        region_of_interest_mask = filtered_mask[top:bottom, left:right].copy()
+        
+        region_of_interest_mask = cv2.morphologyEx(region_of_interest_mask, cv2.MORPH_CLOSE, kernel)
 
-    ########### YOUR CODE ENDS HERE ########### 
-    # Return bounding box
+        contours_in_roi, _ = cv2.findContours(region_of_interest_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+        
+        for ctr in contours_in_roi:
+            for point in ctr:
+                point[0] = (point[0][0] + left, point[0][1] + top)
+
+        x,y,w,h = cv2.boundingRect(np.vstack(contours_in_roi))
+        bounding_box = ((x,y), (x+w, y+h))
+
     return bounding_box
 
 def get_cone_image(img_num = None):
@@ -194,26 +187,3 @@ def hsv_convert_to_cv2(hsv_input):
 
 def get_hsv_range_by_colors(hsv_low, hsv_high):
     return {"lower": np.array(hsv_low), "upper": np.array(hsv_high)}
-
-def get_hsv_range_by_distance(hsv, distances):
-    hue_dist_below, hue_dist_above = distances[0]
-    sat_dist_below, sat_dist_above = distances[1]
-    val_dist_below, val_dist_above = distances[2]
-
-    hue_max, sat_max, val_max = 179, 255, 255
-
-    hue, sat, val = hsv
-    
-    lower_bound = np.array([
-        hue - (hue * hue_dist_below),
-        sat - (sat * sat_dist_below),
-        val - (val * val_dist_below)
-    ])
-
-    upper_bound = np.array([
-        hue + (hue_max - hue) * hue_dist_above,
-        sat + (sat_max - sat) * sat_dist_above,
-        val + (val_max - val) * val_dist_above
-    ])
-    
-    return {"lower": lower_bound, "upper": upper_bound}

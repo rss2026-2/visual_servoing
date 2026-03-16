@@ -67,7 +67,7 @@ def cd_sift_ransac(img, template):
         M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC, 5.0)
         matchesMask = mask.ravel().tolist()
 
-        h, w = template.shape
+        h, w = template.shape[0], template.shape[1]
         pts = np.float32([[0, 0], [0, h-1], [w-1, h-1], [w-1, 0]]).reshape(-1, 1, 2)
 
         # use homography M to map pts onto img

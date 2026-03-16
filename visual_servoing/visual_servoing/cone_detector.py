@@ -46,6 +46,7 @@ class ConeDetector(Node):
         self.bridge = CvBridge()  # Converts between ROS images and OpenCV Images
 
         self.cone_template =  cv2.imread("/root/racecar_ws/src/visual_servoing/visual_servoing/visual_servoing/computer_vision/test_images_cone/cone_template.png")
+        self.bbox_save = None
 
         self.get_logger().info("Cone Detector Initialized")
 
@@ -65,27 +66,40 @@ class ConeDetector(Node):
 
         image = self.bridge.imgmsg_to_cv2(image_msg, "bgr8")
 
-
         # crop image
         image_width, image_height = image.shape[1], image.shape[0]
         image_y_min, image_y_max = int(self.y_min * image_height), int(self.y_max * image_height)
         
         cropped_image = image[image_y_min:image_y_max,:]
         
-        bbox = cd_color_segmentation(cropped_image, self.cone_template, detection_mode = self.detection_mode)
+        new_bbox = cd_color_segmentation(cropped_image, self.cone_template, detection_mode = self.detection_mode)
+        if new_bbox is not None:
+            self.bbox_save = new_bbox
 
-        if bbox is not None:
+        if self.bbox_save is not None:
             cv2.line(image, pt1 = (0, image_y_min), pt2 = (image_width-1, image_y_min), color = (0, 0, 255), thickness = 2)
             cv2.line(image, pt1 = (0, image_y_max), pt2 = (image_width-1, image_y_max), color = (0, 0, 255), thickness = 2)
 
-            bbox_uncropped = [(bbox[0][0], bbox[0][1] + image_y_min), (bbox[1][0], bbox[1][1] + image_y_min)]
+            bbox_uncropped = [(self.bbox_save[0][0], self.bbox_save[0][1] + image_y_min), (self.bbox_save[1][0], self.bbox_save[1][1] + image_y_min)]
             cv2.rectangle(image, bbox_uncropped[0], bbox_uncropped[1], (255,0,0), 2)
             
-            bottom_center_px = get_bottom_center_of_bounds(bbox)
+            bottom_center_px = get_bottom_center_of_bounds(self.bbox_save)
+
+            if self.detection_mode == "line":
+                top_left_px, bottom_right_px = self.bbox_save
+                top_left_x, top_left_y = top_left_px
+                bottom_right_x, bottom_right_y = bottom_right_px
+
+                bottom_center_px = (float((top_left_x + bottom_right_x) / 2), float(top_left_y))
+           
+            elif self.detection_mode == "cone":
+                bottom_center_px = get_bottom_center_of_bounds(self.bbox_save)
+
 
             cone_msg = ConeLocationPixel()
             cone_msg.u, cone_msg.v = bottom_center_px
             cone_msg.v = cone_msg.v + int(self.y_min * image_height)
+
             proximity_msg = Bool()
             if cone_msg.v > image_height * (1 - self.prox_threshold):
                 proximity_msg.data = True
