@@ -44,12 +44,15 @@ class ParkingController(Node):
         self.declare_parameter("velocity", 1.0)
         self.declare_parameter("lookahead", 0.8)
         self.declare_parameter("error_epsilon", 0.05)
+        self.declare_parameter("detection_mode", "cone")
         self.CAR_LENGTH = self.get_parameter('car_length').get_parameter_value().double_value
         self.MAX_STEERING_ANGLE = self.get_parameter('max_steering_angle').get_parameter_value().double_value
         self.VELOCITY = self.get_parameter('velocity').get_parameter_value().double_value
         self.LOOKAHEAD = self.get_parameter('lookahead').get_parameter_value().double_value
         self.EPSILON = self.get_parameter('error_epsilon').get_parameter_value().double_value
         self.STEERING_ANGLE_THRESH = 1.2 # initially working with it at 0.9 but it was reversing a lot
+
+        self.DETECTION_MODE = self.get_parameter('detection_mode').get_parameter_value().string_value
 
         self.drive_cmd = None
         self.proximity_check = False
@@ -244,19 +247,7 @@ class ParkingController(Node):
                                     -self.MAX_STEERING_ANGLE,
                                     self.MAX_STEERING_ANGLE))
 
-            # slow down near goal
-            if goal_dist > 1.5:
-                drive.speed = self.VELOCITY
-            elif goal_dist > 0.9:
-                drive.speed = 0.6 * self.VELOCITY
-            elif goal_dist > 0.6:
-                drive.speed = 0.3 * self.VELOCITY
-            else:
-                drive.speed = 0.15
-            # if goal_dist < 1.0:
-            #     drive.speed = self.VELOCITY * 0.5
-            # else:
-            #     drive.speed = self.VELOCITY
+            drive.speed = self.get_speed_by_mode_and_proximity(goal_dist)
 
         return drive
 
@@ -279,6 +270,18 @@ class ParkingController(Node):
     def pointed_at_cone(self):
         # Returns true if the relative y is within the alloted difference (rn set to 1cm)
         return abs(self.relative_y) < self.EPSILON
+
+    def get_speed_by_mode_and_proximity(self, distance_to_obj):
+        # for the cone, we want to slow down as we appraoch the cone
+        if self.DETECTION_MODE == "cone":
+            # slow down near goal
+            if distance_to_obj > 1.25:
+                return self.VELOCITY
+            else:
+                return 0.5
+        # for the line detection mode, don't want to scale speed because we want to go full speed always
+        else:
+            return self.VELOCITY
 
 def main(args=None):
     rclpy.init(args=args)
