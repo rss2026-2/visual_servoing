@@ -58,7 +58,7 @@ def filter_list_from_filter_specs(filter_specs):
     return filter_lis
 
 
-def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, detection_mode = "cone", margins = None):
+def cd_color_segmentation(img, template = None, hsv_range = None, filter_specs = None, detection_mode = "cone", margins = None):
     """
     Implement the cone detection using color segmentation algorithm
     Input:
@@ -111,13 +111,29 @@ def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, 
     hsv_input_img = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     color_mask = cv2.inRange(hsv_input_img, hsv_range["lower"], hsv_range["upper"])
 
+    cv2.imwrite("visual_servoing/computer_vision/output_images/color_mask.png", color_mask)
+
     filter_cascade = create_filter_cascade(
         filter_list_from_filter_specs(filter_specs)
     )
 
     filtered_mask = filter_cascade(color_mask)
+
+    cv2.imwrite("visual_servoing/computer_vision/output_images/filtered_mask.png", filtered_mask)
  
     contours, _ = cv2.findContours(filtered_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+
+    init_ctr_image = img.copy()
+    for ctr in contours:
+        x,y,w,h = cv2.boundingRect(ctr)
+        cv2.rectangle(init_ctr_image, (x,y), (x+w,y+h), (255,0,0), 2)
+    
+    biggest_ctr =  max(contours, key = cv2.contourArea)
+    bx,by,bw,bh = cv2.boundingRect(biggest_ctr)
+
+    cv2.rectangle(init_ctr_image, (bx,by), (bx+bw,by+bh), (0,0,255), 2)
+    cv2.imwrite("visual_servoing/computer_vision/output_images/initial_contours.png", init_ctr_image)
+
 
     x_margin = margins[0]
     y_margin = margins[1]
@@ -130,6 +146,9 @@ def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, 
 
         left, right = max(bx - x_margin, 0), min(bx + bw + x_margin, img_width-1)
         top, bottom = max(by - y_margin, 0), min(by+bh+y_margin, img_height-1)
+
+        cv2.rectangle(init_ctr_image, (left, top), (right,bottom), (0,255,0), 2)
+        cv2.imwrite("visual_servoing/computer_vision/output_images/region_of_interest.png", init_ctr_image)
         
         kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (25, 5))
         region_of_interest_mask = filtered_mask[top:bottom, left:right].copy()
@@ -141,13 +160,22 @@ def cd_color_segmentation(img, template, hsv_range = None, filter_specs = None, 
         for ctr in contours_in_roi:
             for point in ctr:
                 point[0] = (point[0][0] + left, point[0][1] + top)
+        
+        new_ctr_image = img.copy()
+        for ctr in contours_in_roi:
+            x,y,w,h = cv2.boundingRect(ctr)
+            cv2.rectangle(new_ctr_image, (x,y), (x+w, y+h), (0,0, 255), 2)
+            cv2.imwrite("visual_servoing/computer_vision/output_images/final_contours.png", new_ctr_image)
 
         x,y,w,h = cv2.boundingRect(np.vstack(contours_in_roi))
         bounding_box = ((x,y), (x+w, y+h))
 
+        cv2.rectangle(new_ctr_image, bounding_box[0], bounding_box[1], (0,0,255), 2)
+        cv2.imwrite("visual_servoing/computer_vision/output_images/final_bounds.png", new_ctr_image)
+
     return bounding_box
 
-def get_cone_image(img_num = None):
+def get_image(img_num = None, img_type = "cone"):
     """
     Input:
         img_num: The number corresponding to the cone img
@@ -155,12 +183,16 @@ def get_cone_image(img_num = None):
     Returns:
         The image corresponding to the given img number or a random cone image if no number is given
     """
-    test_imgs_dir = "./visual_servoing/computer_vision/test_images_cone"
+    if img_type == "cone":
+        test_imgs_dir = "./visual_servoing/computer_vision/test_images_cone"
+    elif img_type == "line":
+        test_imgs_dir = "./visual_servoing/computer_vision/test_images_line"
+
     if img_num is None:
         img_num = np.random.randint(1, 21)
 
     img_file = test_imgs_dir + "/test" + str(img_num) + ".jpg"
-    return cv2.imread(img_file)
+    return cv2.imread(img_file), img_num
 
 def get_hsv_from_template(template_img):
     """
@@ -187,3 +219,11 @@ def hsv_convert_to_cv2(hsv_input):
 
 def get_hsv_range_by_colors(hsv_low, hsv_high):
     return {"lower": np.array(hsv_low), "upper": np.array(hsv_high)}
+
+if __name__ == "__main__":
+    img_type = "line"
+    img, img_num = get_image(img_num = 2, img_type = img_type)
+    print("Showing #", img_num)
+    cv2.imwrite("visual_servoing/computer_vision/output_images/initial_img.png", img)
+
+    cd_color_segmentation(img, detection_mode = img_type)
