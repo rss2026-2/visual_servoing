@@ -33,10 +33,10 @@ PTS_IMAGE_PLANE = [[199, 196], # avg over 5 clicks (199 196, 199 196, 199 195, 2
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[46.65, 17.25], # avg over 3 measurements
-                    [37.775, -7.75], # avg over 3 measurements
-                    [24.275, 12.0], # avg over 3 measurements
-                    [13.525, -1.625]]  # avg over 3 measurements
+PTS_GROUND_PLANE = [[46.40, 17.25], # avg over 3 measurements
+                    [37.525, -7.75], # avg over 3 measurements
+                    [24.025, 12.0], # avg over 3 measurements
+                    [13.275, -1.625]]  # avg over 3 measurements
 ######################################################
 
 METERS_PER_INCH = 0.0254
@@ -82,7 +82,7 @@ class HomographyTransformer(Node):
         relative_xy_msg.x_pos = x
         relative_xy_msg.y_pos = y
 
-        self.draw_marker(x, y, '/base_link')
+        self.draw_marker(x, y, '/zed_left_camera_optical_frame')
         self.cone_pub.publish(relative_xy_msg)
 
     def click_callback(self, msg):
