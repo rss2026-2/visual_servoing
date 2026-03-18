@@ -3,4 +3,4 @@ __pycache__/
 *.pyc
 *.npz
 .DS_Store
-.vscode
+.vscode*.db3
