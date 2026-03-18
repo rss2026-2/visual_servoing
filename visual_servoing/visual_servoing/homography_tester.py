@@ -15,13 +15,13 @@ class HomographyTester(Node):
         super().__init__("homography_tester")
         
         # Declare test type parameter
-        self.declare_parameter("test_type", "x")
+        self.declare_parameter("test_type", "y")
         # Get test type parameter
         self.TEST_TYPE = self.get_parameter('test_type').get_parameter_value().string_value
         
         # Subscribe to the /scan to get lidar points to filter out, so we can get the detected cone lidar points
         # We are comparing the relative cone location against this to get homography error
-        self.scan_sub = self.create_subscription(LaserScan, "/scan", self.scan_callback, 1)
+        self.scan_sub = self.create_subscription(LaserScan, "/scan", self.scan_callback, 10)
         
         # Subscribe to /relative_cone to get the relative cone location computed by the homography
         # We are comparing the filtered scan values against this to get homography error
@@ -35,7 +35,7 @@ class HomographyTester(Node):
         self.test_pub = self.create_publisher(PointCloud2, "/filtered_scans_hom_test", 10)
         
         # Initialize cone scanned by lidar that we're comparing homography to
-        self.cartesian_coords_avg = np.array([None, None])
+        self.cartesian_coords_avg = np.array([0, 0])
 
         self.get_logger().info("Homography Tester Initialized")
     
@@ -55,14 +55,14 @@ class HomographyTester(Node):
             # Filter to only take lidar points of a narrow strip forward (moving cone in +x direction)
             cartesian_coords = lidar_subset_calc(
                 angle_range = [-np.pi/16, np.pi/16],
-                distance_range= [0, 3.5]
+                distance_range= [0, 3.9]
             )
         
         elif self.TEST_TYPE == "y":
             # Filter to only take lidar points close and at a wide range (moving cone in +y direction)
             cartesian_coords = lidar_subset_calc(
-                angle_range = [-np.pi/2, np.pi/2],
-                distance_range=[0, 0.8]
+                angle_range = [-np.pi/4, np.pi/4],
+                distance_range=[0, 3]
             )
             
         else:

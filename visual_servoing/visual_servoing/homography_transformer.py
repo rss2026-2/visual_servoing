@@ -22,10 +22,10 @@ from geometry_msgs.msg import Point
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_IMAGE_PLANE = [[199, 196], # avg over 5 clicks (199 196, 199 196, 199 195, 200 197, 200 197, 198 195, 199 196 )
-                   [373, 209], # avg over 5 clicks (373 209, 373 209, 374 209, 374 208, 373 209)
-                   [171, 249], # avg over 5 clicks  (171 249, 171 249, 170 250, 170 249, 171 250)
-                   [409, 315]]  # avg over 5 clicks (409 315, 409 315, 407 314, 409 315, 409 315)
+PTS_IMAGE_PLANE = [[497, 268], # avg over 5 clicks (492 267, 492 267, 502 270, 501 267, 502 269 )
+                   [395, 148], # avg over 5 clicks (397 148, 395 149, 394 148, 394 148, 395 147)
+                   [160.0, 175], # avg over 5 clicks  (162 175, 158 175, 160 174, 158 175, 160 174)
+                   [56, 159]]  # avg over 5 clicks (56 158, 56 159, 56 159, 57 158, 54 160)
 ######################################################
 
 # PTS_GROUND_PLANE units are in inches
@@ -33,10 +33,10 @@ PTS_IMAGE_PLANE = [[199, 196], # avg over 5 clicks (199 196, 199 196, 199 195, 2
 
 ######################################################
 # DUMMY POINTS -- ENTER YOUR MEASUREMENTS HERE
-PTS_GROUND_PLANE = [[46.40, 17.25], # avg over 3 measurements
-                    [37.525, -7.75], # avg over 3 measurements
-                    [24.025, 12.0], # avg over 3 measurements
-                    [13.275, -1.625]]  # avg over 3 measurements
+PTS_GROUND_PLANE = [[17.99, -10.51], # avg over 3 measurements  18 in x 10.5 in
+                    [134.5,  -37.0], # avg over 3 measurements
+                    [57.50, 24.25], # avg over 3 measurements
+                    [99.0, 77.0]]  # avg over 3 measurements
 ######################################################
 
 METERS_PER_INCH = 0.0254
@@ -76,17 +76,17 @@ class HomographyTransformer(Node):
 
         # Call to main function
         x, y = self.transformUvToXy(u, v)
+        y += 0.06
 
         # Publish relative xy position of object in real world
         relative_xy_msg = ConeLocation()
         relative_xy_msg.x_pos = x
         relative_xy_msg.y_pos = y
 
-        self.draw_marker(x, y, '/zed_left_camera_optical_frame')
+        self.draw_marker(x, y, '/base_link')
         self.cone_pub.publish(relative_xy_msg)
 
     def click_callback(self, msg):
-        self.get_logger().info("Click detected")
         u = msg.x
         v = msg.y
         

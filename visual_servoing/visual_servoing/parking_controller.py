@@ -8,6 +8,9 @@ from vs_msgs.msg import ConeLocation, ParkingError
 from ackermann_msgs.msg import AckermannDriveStamped, AckermannDrive
 from std_msgs.msg import Header, Bool
 
+from visualization_msgs.msg import Marker
+
+from safety_controller.visualization_tools import VisualizationTools
 
 
 class ParkingController(Node):
@@ -24,6 +27,8 @@ class ParkingController(Node):
         DRIVE_TOPIC = self.get_parameter("drive_topic").value  # set in launch file; different for simulator vs racecar
 
         self.drive_pub = self.create_publisher(AckermannDriveStamped, DRIVE_TOPIC, 10)
+        self.marker_pub = self.create_publisher(Marker, '/drive_to_point', 10)
+        self.line_pub = self.create_publisher(Marker, '/path', 10)
         self.error_pub = self.create_publisher(ParkingError, "/parking_error", 10)
 
         self.create_subscription(
@@ -104,12 +109,13 @@ class ParkingController(Node):
         # self.get_logger().info(f'Path: {path[0]}')
 
         # visualize path
-        # VisualizationTools.plot_line(path[:,0], path[:,1], self.desired_publisher_)
+        x, y = zip(*path)
+        VisualizationTools.plot_line(list(x), list(y), self.line_pub)
 
         goal_dist = np.sqrt(self.relative_x**2 + self.relative_y**2)
 
         self.LOOKAHEAD = max(0.3, min(1.2, 0.5 * goal_dist))
-        # self.get_logger().info(f'{self.LOOKAHEAD=}')
+        self.get_logger().info(f'{self.LOOKAHEAD=}')
 
 
         # choose lookahead target
@@ -154,8 +160,8 @@ class ParkingController(Node):
         # 2. Goal: Find the point parking_distance in front of the cone
         phi = np.arctan2(cone_y, cone_x) # Angle from car to cone
         p1 = np.array([
-            cone_x - self.parking_distance_min * np.cos(phi),
-            cone_y - self.parking_distance_min * np.sin(phi)
+            cone_x, #- self.parking_distance_min * np.cos(phi),
+            cone_y # - self.parking_distance_min * np.sin(phi)
         ])
 
         # 3. Tangents: Direction car should be moving at start and end
@@ -164,8 +170,8 @@ class ParkingController(Node):
         L = tangent_strength if tangent_strength else dist_to_goal * 1.5
 
         m0 = np.array([L, 0.0])              # Start tangent: straight forward
-        m1 = np.array([L * np.cos(phi), L * np.sin(phi)]) # End tangent: facing cone
-        # can also change this to be m1 = np.array([L, 0.0])
+        # m1 = np.array([L * np.cos(phi), L * np.sin(phi)]) # End tangent: facing cone
+        m1 = np.array([cone_x, cone_y])
 
         # 4. Generate the Spline points
         t = np.linspace(0, 1, num_points)
@@ -180,6 +186,7 @@ class ParkingController(Node):
             # Calculate point on the curve
             point = h00*p0 + h10*m0 + h01*p1 + h11*m1
             path.append(point)
+            
 
         return np.array(path)
 
@@ -198,8 +205,12 @@ class ParkingController(Node):
         for i in range(closest_idx, len(path)):
             if np.linalg.norm(path[i]) > self.LOOKAHEAD:
                 return path[i]
+            
+        point = path[-1]
+        
+        self.draw_marker(point[0], point[1], 'base_link')
 
-        return path[-1]
+        return point
 
     def update_control(self, target_point):
         """
@@ -208,6 +219,7 @@ class ParkingController(Node):
         drive = AckermannDrive()
         # in the case that the cone is behind the car, can also be modified for when we don't see the car
         if self.relative_x < 0:
+            self.get_logger().info("it's behind us, reverse")
             drive.speed = -0.5
             # steer toward the cone while reversing
             drive.steering_angle = float(np.clip(
@@ -224,6 +236,7 @@ class ParkingController(Node):
         # if we are in the stopping range and pointed at the cone, it's okay
         if goal_dist < self.parking_distance_max and goal_dist > self.parking_distance_min and self.pointed_at_cone():
             # TODO add something here if we are too close but not pointed well...
+            self.get_logger().info("we are in the stopping range and pointed at the cone")
             drive.speed = 0.0
             drive.steering_angle = 0.0
             return drive
@@ -232,9 +245,13 @@ class ParkingController(Node):
         new_steering_angle = self.compute_feedback_angle(target_point)
 
         # If the turn we have to make is too tight or the cone is cut off, or the cone is just plainly too close, reverse first
+        reason_for_reversing = ""
         turning_angle_too_tight = abs(new_steering_angle) > self.MAX_STEERING_ANGLE * self.STEERING_ANGLE_THRESH
-        detected_cone_too_close = self.proximity_check
+        if turning_angle_too_tight: reason_for_reversing += "TURNING ANGLE TOO TIGHT"
+        detected_cone_too_close = False # self.proximity_check
         cone_too_close = goal_dist < self.parking_distance_min
+        if cone_too_close: reason_for_reversing += ", TOO CLOSE"
+        self.get_logger().info(f'{reason_for_reversing}; steering_angle: {new_steering_angle}' )
         if turning_angle_too_tight or  detected_cone_too_close or cone_too_close:
             drive.speed = -0.5
             reverse_angle = -0.5 * new_steering_angle
@@ -243,6 +260,7 @@ class ParkingController(Node):
                                      self.MAX_STEERING_ANGLE))
 
         else: # if it is in front of us reasonable angle, give it that angle
+            self.get_logger().info("just drivin")
             drive.steering_angle = float(np.clip(new_steering_angle,
                                     -self.MAX_STEERING_ANGLE,
                                     self.MAX_STEERING_ANGLE))
@@ -275,13 +293,34 @@ class ParkingController(Node):
         # for the cone, we want to slow down as we appraoch the cone
         if self.DETECTION_MODE == "cone":
             # slow down near goal
-            if distance_to_obj > 1.25:
+            if distance_to_obj > 1.5:
                 return self.VELOCITY
             else:
                 return 0.5
         # for the line detection mode, don't want to scale speed because we want to go full speed always
         else:
             return self.VELOCITY
+        
+    def draw_marker(self, cone_x, cone_y, message_frame):
+        """
+        Publish a marker to represent the cone in rviz.
+        (Call this function if you want)
+        """
+        marker = Marker()
+        marker.header.frame_id = message_frame
+        marker.type = marker.SPHERE
+        marker.action = marker.ADD
+        marker.scale.x = .2
+        marker.scale.y = .2
+        marker.scale.z = .2
+        marker.color.a = 1.0
+        marker.color.r = 1.0
+        marker.color.g = .2
+        marker.pose.orientation.w = 1.0
+        marker.pose.position.x = cone_x
+        marker.pose.position.y = cone_y
+        self.marker_pub.publish(marker)
+
 
 def main(args=None):
     rclpy.init(args=args)
