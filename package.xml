@@ -7,6 +7,8 @@
   <maintainer email="jrales@mit.edu">Jospeh</maintainer>
   <license>TODO</license>
 
+  <depend>vs_msgs</depend>
+  
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>

@@ -7,7 +7,7 @@ from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
 from rcl_interfaces.msg import SetParametersResult
 
-from wall_follower.visualization_tools import VisualizationTools
+from viz_utils.visualization_tools import VisualizationTools
 
 # added
 from sensor_msgs.msg import LaserScan

@@ -7,12 +7,11 @@ import numpy as np
 import cv2
 from cv_bridge import CvBridge, CvBridgeError
 
-from std_msgs.msg import String
-from sensor_msgs.msg import Image
-from ackermann_msgs.msg import AckermannDriveStamped
 from visualization_msgs.msg import Marker
-from vs_msgs.msg import ConeLocation, ConeLocationPixel
-from geometry_msgs.msg import Point
+from vs_msgs.msg import Pixel, PixelArray
+from geometry_msgs.msg import Point, Point32, Polygon
+
+from viz_utils.visualization_tools import VisualizationTools
 
 # The following collection of pixel locations and corresponding relative
 # ground plane locations are used to compute our homography matrix
@@ -46,11 +45,33 @@ class HomographyTransformer(Node):
     def __init__(self):
         super().__init__("homography_transformer")
 
-        self.cone_pub = self.create_publisher(ConeLocation, "/relative_cone", 10)
-        self.marker_pub = self.create_publisher(Marker, "/cone_marker", 1)
-        self.cone_px_sub = self.create_subscription(ConeLocationPixel, "/relative_cone_px", self.cone_detection_callback, 1)
-        # added
-        self.click_px_sub = self.create_subscription(Point, "/cone_debug_img_mouse_left", self.click_callback, 1)
+        # -- Declared parameters -- 
+        self.declare_parameter("point_topic", "/relative_point")
+        self.declare_parameter("point_px_topic", "/point_px")
+        self.declare_parameter("point_marker_topic", "/point_marker")
+
+        self.declare_parameter("line_topic", "/relative_line")
+        self.declare_parameter("line_px_topic", "/line_px")
+        self.declare_parameter("line_marker_topic", "/line_marker")
+
+        self.point_topic = self.get_parameter("point_topic").get_parameter_value().string_value
+        self.point_px_topic = self.get_parameter("point_px_topic").get_parameter_value().string_value
+        self.point_marker_topic = self.get_parameter("point_marker_topic").get_parameter_value().string_value
+
+        self.line_topic = self.get_parameter("line_topic").get_parameter_value().string_value
+        self.line_px_topic = self.get_parameter("line_px_topic").get_parameter_value().string_value
+        self.line_marker_topic = self.get_parameter("line_marker_topic").get_parameter_value().string_value
+
+        # -- Publishers and subscribers --
+        self.point_px_sub = self.create_subscription(Pixel, self.point_px_topic, self.point_px_callback, 1)
+        self.point_pub = self.create_publisher(Point, self.point_topic, 10)
+        self.point_marker_pub = self.create_publisher(Marker, self.point_marker_topic, 1)
+   
+        self.line_px_sub = self.create_subscription(PixelArray, self.line_px_topic, self.line_px_callback, 1)
+        self.line_pub = self.create_publisher(Polygon, self.line_topic, 10)
+        self.line_marker_pub = self.create_publisher(Marker, self.line_marker_topic, 1)
+
+        self.click_px_sub = self.create_subscription(Pixel, "/click_px", self.click_callback, 1)
 
         if not len(PTS_GROUND_PLANE) == len(PTS_IMAGE_PLANE):
             rclpy.logerr("ERROR: PTS_GROUND_PLANE and PTS_IMAGE_PLANE should be of same length")
@@ -68,44 +89,73 @@ class HomographyTransformer(Node):
         self.h, err = cv2.findHomography(np_pts_image, np_pts_ground)
 
         self.get_logger().info("Homography Transformer Initialized")
-
-    def cone_detection_callback(self, msg):
+    
+    def point_px_callback(self, msg):
         # Extract information from message
         u = msg.u
         v = msg.v
 
         # Call to main function
-        x, y = self.transformUvToXy(u, v)
-        y += 0.06
+        x, y = self.transform_uv_to_xy(u, v)
+        y += 0.06 # Zed camera to base_link offset
 
         # Publish relative xy position of object in real world
-        relative_xy_msg = ConeLocation()
-        relative_xy_msg.x_pos = x
-        relative_xy_msg.y_pos = y
+        relative_xy_msg = Point()
+        relative_xy_msg.x = x
+        relative_xy_msg.y = y
 
-        self.draw_marker(x, y, '/base_link')
-        self.cone_pub.publish(relative_xy_msg)
+        self.point_pub.publish(relative_xy_msg)
+        VisualizationTools.draw_cylinder(x, y, self.point_marker_pub, self.get_clock().now(), "/base_link")        
 
     def click_callback(self, msg):
-        u = msg.x
-        v = msg.y
-        
 
-        x, y = self.transformUvToXy(u, v)
+        # Call to main function
+        x, y = self.transform_uv_to_xy(msg.u, msg.v)
         
-        self.get_logger().info(f'{u=}, {v=}')
+        self.get_logger().info(f'{msg.u=}, {msg.v=}')
         self.get_logger().info(f'{x=}, {y=}')
         
         # Publish relative xy position of object in real world
-        relative_xy_msg = ConeLocation()
-        relative_xy_msg.x_pos = x
-        relative_xy_msg.y_pos = y
+        relative_xy_msg = Point()
+        relative_xy_msg.x = x
+        relative_xy_msg.y = y
+        y += 0.06 # Zed camera to base_link offset
         
-        self.draw_marker(x, y, "/base_link")
-        self.cone_pub.publish(relative_xy_msg)
+        self.point_pub.publish(relative_xy_msg)
+        VisualizationTools.draw_cylinder(x, y, self.point_marker_pub, self.get_clock().now(), "/base_link")        
+    
+    def line_px_callback(self, msg):
         
+        world_points = Polygon()
+        world_points_raw = []
 
-    def transformUvToXy(self, u, v):
+        pixels = msg.pixels
+        for i in range(0, len(pixels) - 1, 2):
+            u1, v1 = pixels[i].u, pixels[i].v
+            u2, v2 = pixels[i + 1].u, pixels[i + 1].v
+
+            x1, y1 = self.transform_uv_to_xy(u1, v1)
+            x2, y2 = self.transform_uv_to_xy(u2, v2)
+
+            point1 = Point32()
+            point1.x = float(x1)
+            point1.y = float(y1)
+            point1.z = 0.0
+
+            point2 = Point32()
+            point2.x = float(x2)
+            point2.y = float(y2)
+            point2.z = 1.0
+
+            world_points.points.extend([point1, point2])
+            world_points_raw.extend([[x1,y1],[x2,y2]]) # For drawing line in real world
+
+        world_points_raw = np.array(world_points_raw)
+
+        self.line_pub.publish(world_points)
+        VisualizationTools.draw_line(world_points_raw[:, 0], world_points_raw[:, 1], self.line_marker_pub, self.get_clock().now())
+
+    def transform_uv_to_xy(self, u, v):
         """
         u and v are pixel coordinates.
         The top left pixel is the origin, u axis increases to right, and v axis
@@ -127,33 +177,11 @@ class HomographyTransformer(Node):
         # self.get_logger().info(f"x-value: {x} \n y-value: {y}")
         return x, y
 
-    def draw_marker(self, cone_x, cone_y, message_frame):
-        """
-        Publish a marker to represent the cone in rviz.
-        (Call this function if you want)
-        """
-        marker = Marker()
-        marker.header.frame_id = message_frame
-        marker.type = marker.CYLINDER
-        marker.action = marker.ADD
-        marker.scale.x = .2
-        marker.scale.y = .2
-        marker.scale.z = .2
-        marker.color.a = 1.0
-        marker.color.r = 1.0
-        marker.color.g = .5
-        marker.pose.orientation.w = 1.0
-        marker.pose.position.x = cone_x
-        marker.pose.position.y = cone_y
-        self.marker_pub.publish(marker)
-
-
 def main(args=None):
     rclpy.init(args=args)
     homography_transformer = HomographyTransformer()
     rclpy.spin(homography_transformer)
     rclpy.shutdown()
-
 
 if __name__ == "__main__":
     main()

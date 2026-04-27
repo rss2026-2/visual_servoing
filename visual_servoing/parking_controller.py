@@ -10,7 +10,7 @@ from std_msgs.msg import Header, Bool
 
 from visualization_msgs.msg import Marker
 
-from safety_controller.visualization_tools import VisualizationTools
+from viz_utils.visualization_tools import VisualizationTools
 
 
 class ParkingController(Node):
